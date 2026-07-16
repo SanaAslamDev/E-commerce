@@ -36,30 +36,6 @@ Built with HTML, CSS, JavaScript, Node.js, Express, PostgreSQL, and JWT Authenti
 
 ---
 
-## Getting Started
-
-```bash
-git clone https://github.com/SanaAslamDev/Bazzar-Shop.git
-
-cd backend
-npm install
-node server.js
-```
-
-Create a `.env` file:
-
-```env
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=bazzar_db
-DB_PORT=5432
-
-JWT_SECRET=your_secret
-PORT=5500
-```
-
----
 
 ## Author
 
