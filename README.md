@@ -1,6 +1,6 @@
 <div align="center">
 
-#  BAZZAR
+#  Click Cart
 
 **A modern full-stack e-commerce application.**
 
