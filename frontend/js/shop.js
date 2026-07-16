@@ -31,6 +31,12 @@ async function loadProducts() {
     document.getElementById('productsGrid').innerHTML = '<p class="loading-text">Could not load products. Make sure server is running!</p>';
   }
 }
+function escapeForOnclick(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')   // backslash pehle escape karo
+    .replace(/'/g, "\\'")     // single quote — JS string ke liye
+    .replace(/"/g, '&quot;'); // double quote — HTML attribute ke liye
+}
 
 function displayProducts(products) {
   const grid = document.getElementById('productsGrid');
@@ -49,9 +55,10 @@ function displayProducts(products) {
         <h3>${p.name}</h3>
         <p>${p.description}</p>
         <div class="price">Rs ${parseFloat(p.price).toFixed(2)}</div>
-        <button class="btn-add-cart" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image_url}')" ${p.stock === 0 ? 'disabled' : ''}>
+       <button class="btn-add-cart" onclick="addToCart(${p.id}, '${escapeForOnclick(p.name)}', ${p.price}, '${escapeForOnclick(p.image_url)}')" ${p.stock === 0 ? 'disabled' : ''}>
           ${p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </button>
+       
       </div>
     </div>`).join('');
 }

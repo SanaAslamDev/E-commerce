@@ -328,20 +328,43 @@ input, textarea, select {     font-family: "Kameron", serif; }
 }
 .btn-solid:hover { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 
-/* --- Responsive navbar: nav-links collapse before anything can overflow,
-   buttons/logo shrink progressively so nothing gets clipped off-screen --- */
+/* --- Responsive navbar: the full navbar (logo, links, buttons) always
+   stays visible — nothing gets hidden. On narrower screens it wraps onto
+   a second row (logo + buttons on top, links centered below) and the
+   type/gaps shrink progressively so nothing overflows or gets clipped. --- */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--nav-h);
+    padding: 14px clamp(20px, 4vw, 32px);
+    row-gap: 12px;
+  }
+  .navbar .logo { order: 1; }
+  .nav-buttons { order: 2; }
+  .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(14px, 3vw, 28px);
+  }
+  .hero { padding-top: 140px; }
 }
 @media (max-width: 640px) {
-  .navbar { padding: 0 16px; gap: 8px; }
+  .navbar { padding: 12px 16px; gap: 8px; row-gap: 10px; }
   .navbar .logo { font-size: 1.15rem; letter-spacing: 0.1em; }
   .nav-buttons { gap: 6px; }
   .btn-outline, .btn-solid { padding: 8px 14px; font-size: 0.62rem; }
+  .nav-links { gap: 10px 18px; }
+  .nav-links a { font-size: 0.66rem; }
+  .hero { padding-top: 145px; }
 }
 @media (max-width: 360px) {
   .navbar .logo { font-size: 1rem; }
   .btn-outline, .btn-solid { padding: 7px 10px; font-size: 0.58rem; }
+  .nav-links { gap: 8px 14px; }
+  .nav-links a { font-size: 0.6rem; }
 }
 
 /* ============================================================
@@ -871,7 +894,7 @@ footer {
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
-  .hero { grid-template-columns: 1fr; padding-top: calc(var(--nav-h) + 30px); }
+  .hero { grid-template-columns: 1fr; }
   .hero-image { order: -1; }
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr; }
@@ -1183,20 +1206,55 @@ display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08
 .status-shipping { background: #e2f4ea; color: #1f7d4e; }
 .status-delivered { background: var(--text); color: var(--text-light); }
 
+/* Tablet: sidebar collapses into a single horizontal top bar — logo on
+   the left, all menu items (incl. Logout) inline on the right, wrapping
+   if needed. Stats become a 2-up grid. */
 @media (max-width: 992px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .admin-layout { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; position: static; flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 14px clamp(16px, 4vw, 28px);
+    gap: 6px 10px;
+  }
+  .sidebar-logo { padding: 0; border-bottom: none; margin-right: auto; }
   .sidebar-torn { display: none; }
-  .sidebar-menu { display: flex; padding: 0; overflow-x: auto; }
-  .sidebar-menu-bottom { margin-top: 0; border-top: none; }
-  .sidebar-menu a { padding: 14px 18px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
-  .sidebar-menu a.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+  .sidebar-menu, .sidebar-menu-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    border-top: none;
+  }
+  .sidebar-menu li, .sidebar-menu-bottom li { margin-bottom: 0; }
+  .sidebar-menu a, .sidebar-menu-bottom a {
+    padding: 9px 16px;
+    white-space: nowrap;
+    border-left: none;
+    border-radius: 20px;
+  }
+  .sidebar-menu a.active { border-left-color: transparent; background: rgba(213, 181, 140, 0.18); }
+  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+/* Mobile: logo takes its own centered row on top, menu items wrap in a
+   centered row below it (pill buttons); stats stack to a single column. */
+@media (max-width: 560px) {
+  .sidebar { flex-direction: column; align-items: center; padding: 14px 16px; gap: 10px; }
+  .sidebar-logo { margin-right: 0; text-align: center; width: 100%; }
+  .sidebar-menu, .sidebar-menu-bottom { justify-content: center; width: 100%; gap: 6px 8px; }
+  .sidebar-menu a, .sidebar-menu-bottom a { padding: 8px 14px; font-size: 0.66rem; }
   .stats-grid { grid-template-columns: 1fr; }
   .admin-content { padding: 20px 16px; }
-  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .admin-page-header--flex { gap: 12px; }
+  .stat-card { padding: 18px; }
 }
 
 /* ============================================================
