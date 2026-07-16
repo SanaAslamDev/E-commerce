@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BAZZAR - Admin Dashboard</title>
+  <title>Click Cart - Admin Dashboard</title>
   <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
@@ -18,33 +18,38 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">BAZZAR</div>
+    <div class="sidebar-logo">Click Cart</div>
     <ul class="sidebar-menu">
       <li>
-        <a href="#" class="active" id="menuDashboard" onclick="showSection('dashboard')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <a href="#" class="active" id="menuDashboard" onclick="showSection('dashboard');return false;">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           Dashboard
         </a>
       </li>
       <li>
-        <a href="#" id="menuProducts" onclick="showSection('products')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <a href="#" id="menuProducts" onclick="showSection('products');return false;">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
           Products
         </a>
       </li>
       <li>
-        <a href="#" id="menuOrders" onclick="showSection('orders')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <a href="#" id="menuOrders" onclick="showSection('orders');return false;">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           Orders
         </a>
       </li>
+    </ul>
+    <ul class="sidebar-menu sidebar-menu-bottom">
       <li>
         <a href="index.html" onclick="handleLogout()">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Logout
         </a>
       </li>
     </ul>
+    <div class="sidebar-torn">
+      <span id="sidebarDate"></span>
+    </div>
   </aside>
 
   <!-- MAIN CONTENT -->
@@ -52,14 +57,25 @@
 
     <!-- DASHBOARD -->
     <div id="section-dashboard">
-      <div class="admin-page-header">
-        <h2 style="color:black">Dashboard</h2>
-        <p class="admin-page-sub">Welcome back, Admin</p>
+      <div class="admin-page-header admin-page-header--flex">
+        <div>
+          <h2>Dashboard</h2>
+          <p class="admin-page-sub">Welcome back, Admin</p>
+        </div>
+        <div class="admin-stamp">
+          <svg viewBox="0 0 100 100">
+            <path id="dashStampPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none"/>
+            <text font-size="7.5" letter-spacing="2">
+              <textPath href="#dashStampPath" startOffset="2%">CURATED &#8226; WITH &#8226; TASTE &#8226;</textPath>
+            </text>
+          </svg>
+        </div>
       </div>
+
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statProducts">-</div>
@@ -68,7 +84,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statOrders">-</div>
@@ -77,50 +93,77 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statRevenue">-</div>
             <div class="stat-label">Total Revenue</div>
           </div>
         </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-card-info">
+            <div class="stat-value" id="statPending">-</div>
+            <div class="stat-label">Pending Orders</div>
+          </div>
+        </div>
       </div>
-      <p class="admin-hint">Use the sidebar to manage products and orders.</p>
+
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <h3>Recent Orders</h3>
+          <button class="btn-view-all" onclick="showSection('orders')">View All Orders</button>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="recentOrdersBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- PRODUCTS -->
     <div id="section-products" style="display:none;">
-      <div class="admin-page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div class="admin-page-header admin-page-header--flex">
         <div>
-          <h2 style="color:black;">Products</h2>
+          <h2>Products</h2>
           <p class="admin-page-sub">Manage your product catalog</p>
         </div>
         <button class="btn-add-new" onclick="openProductModal()">+ Add Product</button>
       </div>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="productsBody"></tbody>
-      </table>
+      <div class="admin-panel">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- ORDERS -->
     <div id="section-orders" style="display:none;">
       <div class="admin-page-header">
-        <h2 style="color:black;">Orders</h2>
+        <h2>Orders</h2>
         <p class="admin-page-sub">Track and manage customer orders</p>
       </div>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Order ID</th><th>Customer</th><th>Phone</th><th>Address</th><th>Total</th><th>Date</th><th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="ordersBody"></tbody>
-      </table>
+      <div class="admin-panel">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Customer</th><th>Phone</th><th>Address</th><th>Total</th><th>Date</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
     </div>
 
   </main>
@@ -128,180 +171,34 @@
 
 <!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal" style="width:500px;">
+  <div class="modal" style="max-width:520px;">
     <button class="close-btn" onclick="closeModal('productModal')">&#x2715;</button>
     <h2 id="productModalTitle">Add New Product</h2>
     <input type="hidden" id="productId"/>
-    <input type="text" id="productName" placeholder="Product Name"/>
+    <label class="modal-label">Product Name</label>
+    <input type="text" id="productName" placeholder="Product name"/>
+    <label class="modal-label">Description</label>
     <input type="text" id="productDescription" placeholder="Description"/>
-    <input type="number" id="productPrice" placeholder="Price in Rs (e.g. 4999)" step="0.01"/>
-    <input type="text" id="productImage" placeholder="Image URL"/>
+    <label class="modal-label">Price (Rs)</label>
+    <input type="number" id="productPrice" placeholder="e.g. 4999" step="0.01"/>
+    <label class="modal-label">Image URL</label>
+    <input type="text" id="productImage" placeholder="https://..."/>
+    <label class="modal-label">Category</label>
     <select id="productCategory" class="modal-select">
       <option value="">Select Category</option>
       <option value="Electronics">Electronics</option>
       <option value="Accessories">Accessories</option>
       <option value="Fashion">Fashion</option>
       <option value="Cosmetics">Cosmetics</option>
-      <option value="Home Appliances">Home Appliances</option>
+      <option value="Appliances">Appliances</option>
     </select>
+    <label class="modal-label">Stock Quantity</label>
     <input type="number" id="productStock" placeholder="Stock quantity"/>
     <button class="btn-submit" onclick="saveProduct()">Save Product</button>
   </div>
 </div>
 
-<script>
-  const API = 'http://localhost:5500';
-  const sections = ['dashboard', 'products', 'orders'];
-
-  // --- NAVIGATION ---
-  function showSection(name) {
-    sections.forEach(s => document.getElementById('section-' + s).style.display = 'none');
-    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-    document.getElementById('section-' + name).style.display = 'block';
-    document.getElementById('menu' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
-    if (name === 'dashboard') loadStats();
-    if (name === 'products') loadProducts();
-    if (name === 'orders') loadOrders();
-  }
-
-  // --- DASHBOARD ---
-  async function loadStats() {
-    try {
-      const [products, orders] = await Promise.all([
-        fetch(`${API}/products`).then(r => r.json()),
-        fetch(`${API}/orders`).then(r => r.json())
-      ]);
-      document.getElementById('statProducts').textContent = products.length;
-      document.getElementById('statOrders').textContent = orders.length;
-      document.getElementById('statRevenue').textContent = 'Rs ' + orders.reduce((s, o) => s + parseFloat(o.total || 0), 0).toFixed(2);
-    } catch (err) { console.log('Stats error:', err); }
-  }
-
-  // --- PRODUCTS ---
-  async function loadProducts() {
-    try {
-      const products = await fetch(`${API}/products`).then(r => r.json());
-      document.getElementById('productsBody').innerHTML = products.map(p => `
-        <tr>
-          <td><img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/50'"/></td>
-          <td><strong>${p.name}</strong></td>
-          <td><span class="cat-tag">${p.category}</span></td>
-          <td>Rs ${parseFloat(p.price).toFixed(2)}</td>
-          <td>${p.stock}</td>
-          <td>
-            <button class="btn-edit" onclick="editProduct(${p.id}, '${p.name.replace(/'/g,"\\'")}', '${p.description.replace(/'/g,"\\'")}', ${p.price}, '${p.image_url}', '${p.category}', ${p.stock})">Edit</button>
-            <button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button>
-          </td>
-        </tr>`).join('');
-    } catch { alert('Could not load products!'); }
-  }
-
-  function openProductModal() {
-    document.getElementById('productModalTitle').textContent = 'Add New Product';
-    ['productId','productName','productDescription','productPrice','productImage','productStock'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('productCategory').value = '';
-    document.getElementById('productModal').classList.add('active');
-  }
-
-  function editProduct(id, name, description, price, image, category, stock) {
-    document.getElementById('productModalTitle').textContent = 'Edit Product';
-    document.getElementById('productId').value = id;
-    document.getElementById('productName').value = name;
-    document.getElementById('productDescription').value = description;
-    document.getElementById('productPrice').value = price;
-    document.getElementById('productImage').value = image;
-    document.getElementById('productCategory').value = category;
-    document.getElementById('productStock').value = stock;
-    document.getElementById('productModal').classList.add('active');
-  }
-
-  async function saveProduct() {
-    const id = document.getElementById('productId').value;
-    const name = document.getElementById('productName').value.trim();
-    const description = document.getElementById('productDescription').value.trim();
-    const price = document.getElementById('productPrice').value;
-    const image_url = document.getElementById('productImage').value.trim();
-    const category = document.getElementById('productCategory').value;
-    const stock = document.getElementById('productStock').value;
-
-    if (!name || !price || !category) { alert('Please fill Name, Price and Category!'); return; }
-
-    try {
-      const url = id ? `${API}/products/${id}` : `${API}/products`;
-      const method = id ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, price, image_url, category, stock })
-      });
-      if (res.ok) {
-        closeModal('productModal');
-        loadProducts();
-        alert(id ? 'Product updated!' : 'Product added!');
-      } else {
-        alert('Error saving product!');
-      }
-    } catch { alert('Could not connect to server!'); }
-  }
-
-  async function deleteProduct(id) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    try {
-      await fetch(`${API}/products/${id}`, { method: 'DELETE' });
-      loadProducts();
-      alert('Product deleted!');
-    } catch { alert('Error deleting product!'); }
-  }
-
-  // --- ORDERS ---
-  async function loadOrders() {
-    try {
-      const orders = await fetch(`${API}/orders`).then(r => r.json());
-      document.getElementById('ordersBody').innerHTML = orders.map(o => `
-        <tr>
-          <td><strong>#${o.id}</strong></td>
-          <td>${o.customer_name || o.full_name}</td>
-          <td>${o.phone}</td>
-          <td>${o.address}</td>
-          <td>Rs ${parseFloat(o.total).toFixed(2)}</td>
-          <td>${new Date(o.created_at).toLocaleDateString()}</td>
-          <td>
-            <select class="status-select" onchange="updateStatus(${o.id}, this.value)">
-              <option value="Pending"    ${o.status==='Pending'    ? 'selected':''}>Pending</option>
-              <option value="Processing" ${o.status==='Processing' ? 'selected':''}>Processing</option>
-              <option value="Shipping"   ${o.status==='Shipping'   ? 'selected':''}>Shipping</option>
-              <option value="Delivered"  ${o.status==='Delivered'  ? 'selected':''}>Delivered</option>
-            </select>
-          </td>
-        </tr>`).join('');
-    } catch { alert('Could not load orders!'); }
-  }
-
-  async function updateStatus(orderId, status) {
-    try {
-      await fetch(`${API}/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      alert('Order status updated to: ' + status);
-    } catch { alert('Error updating status!'); }
-  }
-
-  // --- AUTH ---
-  function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  }
-
-  // --- MODALS ---
-  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
-  });
-
-  loadStats();
-</script>
+<script src="js/admin.js"></script>
 
 </body>
 </html>
