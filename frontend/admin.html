@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Click Cart - Admin Dashboard</title>
   <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900&display=swap" rel="stylesheet"/>
+  <script>
+    // Set this to your deployed backend URL before going to production.
+    // Falls back to localhost:5500 for local development only.
+    window.CLICK_CART_API_BASE = window.CLICK_CART_API_BASE || "http://localhost:5500";
+  </script>
 </head>
 <body>
 
@@ -18,35 +22,44 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">Click Cart</div>
-    <ul class="sidebar-menu">
-      <li>
-        <a href="#" class="active" id="menuDashboard" onclick="showSection('dashboard');return false;">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Dashboard
-        </a>
-      </li>
-      <li>
-        <a href="#" id="menuProducts" onclick="showSection('products');return false;">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          Products
-        </a>
-      </li>
-      <li>
-        <a href="#" id="menuOrders" onclick="showSection('orders');return false;">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          Orders
-        </a>
-      </li>
-    </ul>
-    <ul class="sidebar-menu sidebar-menu-bottom">
-      <li>
-        <a href="index.html" onclick="handleLogout()">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Logout
-        </a>
-      </li>
-    </ul>
+    <div class="sidebar-top">
+      <div class="sidebar-logo">Click Cart</div>
+      <button class="sidebar-burger" id="sidebarBurger" aria-label="Menu" aria-expanded="false" onclick="toggleAdminNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-wrap" id="sidebarMenuWrap">
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#" class="active" id="menuDashboard" onclick="showSection('dashboard');return false;">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#" id="menuProducts" onclick="showSection('products');return false;">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Products
+          </a>
+        </li>
+        <li>
+          <a href="#" id="menuOrders" onclick="showSection('orders');return false;">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Orders
+          </a>
+        </li>
+      </ul>
+      <ul class="sidebar-menu sidebar-menu-bottom">
+        <li>
+          <a href="index.html" onclick="handleLogout()">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+
     <div class="sidebar-torn">
       <span id="sidebarDate"></span>
     </div>
@@ -59,11 +72,11 @@
     <div id="section-dashboard">
       <div class="admin-page-header admin-page-header--flex">
         <div>
-          <h2>Dashboard</h2>
+          <h1>Dashboard</h1>
           <p class="admin-page-sub">Welcome back, Admin</p>
         </div>
         <div class="admin-stamp">
-          <svg viewBox="0 0 100 100">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
             <path id="dashStampPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none"/>
             <text font-size="7.5" letter-spacing="2">
               <textPath href="#dashStampPath" startOffset="2%">CURATED &#8226; WITH &#8226; TASTE &#8226;</textPath>
@@ -75,7 +88,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statProducts">-</div>
@@ -84,7 +97,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statOrders">-</div>
@@ -93,7 +106,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statRevenue">-</div>
@@ -102,7 +115,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           <div class="stat-card-info">
             <div class="stat-value" id="statPending">-</div>
@@ -119,7 +132,7 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th>
+              <th scope="col">Order ID</th><th scope="col">Customer</th><th scope="col">Total</th><th scope="col">Status</th><th scope="col">Date</th>
             </tr>
           </thead>
           <tbody id="recentOrdersBody"></tbody>
@@ -140,7 +153,7 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
+              <th scope="col">Image</th><th scope="col">Name</th><th scope="col">Category</th><th scope="col">Price</th><th scope="col">Stock</th><th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody id="productsBody"></tbody>
@@ -158,7 +171,7 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Order ID</th><th>Customer</th><th>Phone</th><th>Address</th><th>Total</th><th>Date</th><th>Status</th>
+              <th scope="col">Order ID</th><th scope="col">Customer</th><th scope="col">Phone</th><th scope="col">Address</th><th scope="col">Total</th><th scope="col">Date</th><th scope="col">Status</th>
             </tr>
           </thead>
           <tbody id="ordersBody"></tbody>
@@ -172,29 +185,31 @@
 <!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="productModal">
   <div class="modal" style="max-width:520px;">
-    <button class="close-btn" onclick="closeModal('productModal')">&#x2715;</button>
+    <button class="close-btn" onclick="closeModal('productModal')" aria-label="Close">&#x2715;</button>
     <h2 id="productModalTitle">Add New Product</h2>
-    <input type="hidden" id="productId"/>
-    <label class="modal-label">Product Name</label>
-    <input type="text" id="productName" placeholder="Product name"/>
-    <label class="modal-label">Description</label>
-    <input type="text" id="productDescription" placeholder="Description"/>
-    <label class="modal-label">Price (Rs)</label>
-    <input type="number" id="productPrice" placeholder="e.g. 4999" step="0.01"/>
-    <label class="modal-label">Image URL</label>
-    <input type="text" id="productImage" placeholder="https://..."/>
-    <label class="modal-label">Category</label>
-    <select id="productCategory" class="modal-select">
-      <option value="">Select Category</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Accessories">Accessories</option>
-      <option value="Fashion">Fashion</option>
-      <option value="Cosmetics">Cosmetics</option>
-      <option value="Appliances">Appliances</option>
-    </select>
-    <label class="modal-label">Stock Quantity</label>
-    <input type="number" id="productStock" placeholder="Stock quantity"/>
-    <button class="btn-submit" onclick="saveProduct()">Save Product</button>
+    <form id="productForm" onsubmit="event.preventDefault(); saveProduct();">
+      <input type="hidden" id="productId"/>
+      <label class="modal-label" for="productName">Product Name</label>
+      <input type="text" id="productName" name="productName" placeholder="Product name" required/>
+      <label class="modal-label" for="productDescription">Description</label>
+      <input type="text" id="productDescription" name="productDescription" placeholder="Description"/>
+      <label class="modal-label" for="productPrice">Price (Rs)</label>
+      <input type="number" id="productPrice" name="productPrice" placeholder="e.g. 4999" step="0.01" required/>
+      <label class="modal-label" for="productImage">Image URL</label>
+      <input type="text" id="productImage" name="productImage" placeholder="https://..."/>
+      <label class="modal-label" for="productCategory">Category</label>
+      <select id="productCategory" name="productCategory" class="modal-select" required>
+        <option value="">Select Category</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Accessories">Accessories</option>
+        <option value="Fashion">Fashion</option>
+        <option value="Cosmetics">Cosmetics</option>
+        <option value="Appliances">Appliances</option>
+      </select>
+      <label class="modal-label" for="productStock">Stock Quantity</label>
+      <input type="number" id="productStock" name="productStock" placeholder="Stock quantity"/>
+      <button type="submit" class="btn-submit" id="saveProductBtn">Save Product</button>
+    </form>
   </div>
 </div>
 

@@ -5,32 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Click Cart - Shop</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900&display=swap" rel="stylesheet" />
+  <script>
+    // Set this to your deployed backend URL before going to production.
+    // Falls back to localhost:5500 for local development only.
+    window.CLICK_CART_API_BASE = window.CLICK_CART_API_BASE || "http://localhost:5500";
+  </script>
 </head>
 <body>
 
 <!-- NAVBAR -->
 <nav class="shop-navbar">
   <a href="index.html" class="logo">Click Cart</a>
-  <div class="search-bar">
-    <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+  <div class="search-bar" role="search">
+    <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
     </svg>
-    <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()" />
+    <label for="searchInput" class="sr-only">Search products</label>
+    <input type="text" id="searchInput" placeholder="Search products..." aria-label="Search products" oninput="searchProducts()" />
   </div>
   <div class="shop-nav-actions">
-    <button class="icon-btn" title="Wishlist" aria-label="Wishlist">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <button class="icon-btn" title="Wishlist" aria-label="Wishlist (coming soon)" disabled>
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
     </button>
-    <div class="cart-icon" onclick="toggleCart()">
-      <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <div class="cart-icon" id="cartIconBtn" onclick="toggleCart()" tabindex="0" role="button" aria-label="Open cart" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCart();}">
+      <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
         <line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
       </svg>
       <span class="cart-badge" id="cartBadge">0</span>
     </div>
     <div class="user-menu" id="userMenuSection" style="display:none;">
-      <button class="btn-solid" onclick="toggleDropdown()" id="userBtn">User</button>
+      <button class="btn-solid" onclick="toggleDropdown()" id="userBtn" aria-haspopup="true" aria-expanded="false">User</button>
       <div class="dropdown" id="userDropdown">
         <a href="#" onclick="showOrders()">My Orders</a>
         <a href="#" onclick="handleLogout()">Logout</a>
@@ -45,6 +50,7 @@
 
 <!-- SHOP -->
 <div class="shop-container">
+  <h1 class="sr-only">Shop All Products</h1>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterCategory('')">All</button>
     <button class="filter-btn" onclick="filterCategory('Electronics')">Electronics</button>
@@ -62,7 +68,7 @@
 <div class="cart-panel" id="cartPanel">
   <div class="cart-header">
     <h2>Your Cart</h2>
-    <button class="close-btn close-btn--dark" onclick="toggleCart()">&#x2715;</button>
+    <button class="close-btn close-btn--dark" onclick="toggleCart()" aria-label="Close cart">&#x2715;</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-footer">
@@ -78,28 +84,30 @@
 <!-- DELIVERY MODAL -->
 <div class="modal-overlay" id="deliveryModal">
   <div class="delivery-modal">
-    <button class="close-btn" onclick="closeModal('deliveryModal')">&#x2715;</button>
+    <button class="close-btn" onclick="closeModal('deliveryModal')" aria-label="Close">&#x2715;</button>
     <h2>Delivery Details</h2>
-    <label class="modal-label">Full Name</label>
-    <input type="text" id="fullName" placeholder="Enter your name" />
-    <label class="modal-label">Phone Number</label>
-    <input type="text" id="phoneNumber" placeholder="03xx-xxxxxxxx" />
-    <label class="modal-label">Email Address</label>
-    <input type="email" id="emailAddress" placeholder="Email Address" />
-    <label class="modal-label">Street Address</label>
-    <textarea id="deliveryAddress" placeholder="House no, street, area"></textarea>
-    <div class="delivery-row">
-      <div class="delivery-col">
-        <label class="modal-label">City</label>
-        <input type="text" id="deliveryCity" placeholder="City" />
+    <form id="deliveryForm" onsubmit="event.preventDefault(); placeOrder();">
+      <label class="modal-label" for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your name" autocomplete="name" required />
+      <label class="modal-label" for="phoneNumber">Phone Number</label>
+      <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="03xx-xxxxxxxx" autocomplete="tel" required />
+      <label class="modal-label" for="emailAddress">Email Address</label>
+      <input type="email" id="emailAddress" name="emailAddress" placeholder="Email Address" autocomplete="email" required />
+      <label class="modal-label" for="deliveryAddress">Street Address</label>
+      <textarea id="deliveryAddress" name="deliveryAddress" placeholder="House no, street, area" required></textarea>
+      <div class="delivery-row">
+        <div class="delivery-col">
+          <label class="modal-label" for="deliveryCity">City</label>
+          <input type="text" id="deliveryCity" name="deliveryCity" placeholder="City" autocomplete="address-level2" required />
+        </div>
+        <div class="delivery-col">
+          <label class="modal-label" for="deliveryPostal">Postal Code</label>
+          <input type="text" id="deliveryPostal" name="deliveryPostal" placeholder="Postal code" autocomplete="postal-code" required/>
+        </div>
       </div>
-      <div class="delivery-col">
-        <label class="modal-label">Postal Code</label>
-        <input type="text" id="deliveryPostal" placeholder="Postal code" />
-      </div>
-    </div>
-    <div class="total-amount" id="modalTotal">Total Amount: Rs 0.00</div>
-    <button class="btn-submit" onclick="placeOrder()">Place Order</button>
+      <div class="total-amount" id="modalTotal">Total Amount: Rs 0.00</div>
+      <button type="submit" class="btn-submit" id="placeOrderBtn">Place Order</button>
+    </form>
   </div>
 </div>
 
@@ -107,7 +115,7 @@
 <div class="modal-overlay" id="receiptModal">
   <div class="receipt">
     <div class="receipt-check">
-      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
         <polyline points="20 6 9 17 4 12" />
       </svg>
     </div>
@@ -122,7 +130,7 @@
 <!-- MY ORDERS MODAL -->
 <div class="modal-overlay" id="ordersModal">
   <div class="orders-modal">
-    <button class="close-btn" onclick="closeModal('ordersModal')">&#x2715;</button>
+    <button class="close-btn" onclick="closeModal('ordersModal')" aria-label="Close">&#x2715;</button>
     <h2>My Orders</h2>
     <div id="ordersList"></div>
   </div>

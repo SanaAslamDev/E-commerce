@@ -1,4 +1,4 @@
-const API = 'http://localhost:5500';
+const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5500';
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -74,14 +74,41 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 function scrollToElement(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
+  closeMobileNav();
 }
+
+// --- MOBILE NAV (hamburger) ---
+function toggleMobileNav() {
+  const panel = document.getElementById('mobileNavPanel');
+  const burger = document.getElementById('navBurger');
+  if (!panel || !burger) return;
+  const isOpen = panel.classList.toggle('open');
+  burger.classList.toggle('active', isOpen);
+  burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function closeMobileNav() {
+  const panel = document.getElementById('mobileNavPanel');
+  const burger = document.getElementById('navBurger');
+  if (!panel || !burger) return;
+  panel.classList.remove('open');
+  burger.classList.remove('active');
+  burger.setAttribute('aria-expanded', 'false');
+}
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('mobileNavPanel');
+  const burger = document.getElementById('navBurger');
+  if (!panel || !panel.classList.contains('open')) return;
+  if (!panel.contains(e.target) && !burger.contains(e.target)) closeMobileNav();
+});
 
 function goToShop() {
   window.location.href = 'shop.html';
 }
 
 function goToCategory(category) {
-  window.location.href = `shop.html?category=${category}`;
+  window.location.href = `shop.html?category=${encodeURIComponent(category)}`;
 }
 
 // --- AUTH HELPERS ---
@@ -97,18 +124,38 @@ function setError(id, message) {
   document.getElementById(id).textContent = message;
 }
 
+// Disables a submit button and swaps its label while a request is in
+// flight, then restores it — prevents duplicate submissions from a
+// double-click or a slow connection without changing the button's
+// normal appearance/behavior otherwise.
+function setButtonBusy(button, busyLabel) {
+  if (!button) return () => {};
+  const originalLabel = button.textContent;
+  const originalDisabled = button.disabled;
+  button.disabled = true;
+  button.textContent = busyLabel;
+  return () => {
+    button.disabled = originalDisabled;
+    button.textContent = originalLabel;
+  };
+}
+
 // --- REGISTER ---
 async function handleRegister() {
   const { name, email, password } = getFormData('register');
   const errorDiv = 'registerError';
+  setError(errorDiv, '');
 
   if (!name || !email || !password) {
     setError(errorDiv, 'Please fill in all fields!');
     return;
   }
 
+  const submitBtn = document.getElementById('registerSubmitBtn');
+  const restoreBtn = setButtonBusy(submitBtn, 'Creating Account...');
+
   try {
-    const res = await fetch(`${API}/register`, {
+    const res = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
@@ -121,10 +168,12 @@ async function handleRegister() {
       document.getElementById('registerEmail').value = '';
       document.getElementById('registerPassword').value = '';
     } else {
-      setError(errorDiv, data.message);
+      setError(errorDiv, data.message || 'Could not create account.');
     }
   } catch {
     setError(errorDiv, 'Could not connect to server!');
+  } finally {
+    restoreBtn();
   }
 }
 
@@ -132,14 +181,18 @@ async function handleRegister() {
 async function handleLogin() {
   const { email, password } = getFormData('login');
   const errorDiv = 'loginError';
+  setError(errorDiv, '');
 
   if (!email || !password) {
     setError(errorDiv, 'Please fill in all fields!');
     return;
   }
 
+  const submitBtn = document.getElementById('loginSubmitBtn');
+  const restoreBtn = setButtonBusy(submitBtn, 'Logging In...');
+
   try {
-    const res = await fetch(`${API}/login`, {
+    const res = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -150,10 +203,12 @@ async function handleLogin() {
       localStorage.setItem('user', JSON.stringify(data.user));
       window.location.href = data.user.role === 'admin' ? 'admin.html' : 'shop.html';
     } else {
-      setError(errorDiv, data.message);
+      setError(errorDiv, data.message || 'Invalid email or password.');
     }
   } catch {
     setError(errorDiv, 'Could not connect to server!');
+  } finally {
+    restoreBtn();
   }
 }
 

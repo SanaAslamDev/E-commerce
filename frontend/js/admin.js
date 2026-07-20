@@ -1,5 +1,33 @@
-const API = 'http://localhost:5500';
+const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5500';
 const SECTIONS = ['dashboard', 'products', 'orders'];
+
+// --- AUTH HEADER HELPER ---
+// Every admin request now identifies the caller via the stored token
+// instead of relying purely on the client-side role check at the top of
+// admin.html (that check only hides the page — it does not protect the
+// API, so the server must verify this token/role on its end too).
+function authHeaders() {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// ========== ESCAPE FUNCTIONS ==========
+
+function escapeForOnclick(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')  
+    .replace(/'/g, "\\'")    
+    .replace(/"/g, '&quot;');
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 // --- NAVIGATION ---
 function showSection(name) {
@@ -11,14 +39,35 @@ function showSection(name) {
   if (name === 'dashboard') loadStats();
   else if (name === 'products') loadProducts();
   else if (name === 'orders') loadOrders();
+
+  closeAdminNav();
+}
+
+// --- SIDEBAR MOBILE BURGER ---
+function toggleAdminNav() {
+  const wrap = document.getElementById('sidebarMenuWrap');
+  const burger = document.getElementById('sidebarBurger');
+  if (!wrap || !burger) return;
+  const isOpen = wrap.classList.toggle('open');
+  burger.classList.toggle('active', isOpen);
+  burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function closeAdminNav() {
+  const wrap = document.getElementById('sidebarMenuWrap');
+  const burger = document.getElementById('sidebarBurger');
+  if (!wrap || !burger) return;
+  wrap.classList.remove('open');
+  burger.classList.remove('active');
+  burger.setAttribute('aria-expanded', 'false');
 }
 
 // --- DASHBOARD ---
 async function loadStats() {
   try {
     const [products, orders] = await Promise.all([
-      fetch(`${API}/products`).then(r => r.json()),
-      fetch(`${API}/orders`).then(r => r.json())
+      fetch(`${API_BASE_URL}/products`, { headers: { ...authHeaders() } }).then(r => r.json()),
+      fetch(`${API_BASE_URL}/orders`, { headers: { ...authHeaders() } }).then(r => r.json())
     ]);
 
     document.getElementById('statProducts').textContent = products.length;
@@ -50,9 +99,9 @@ function renderRecentOrders(orders) {
     : recent.map(o => `
       <tr>
         <td><strong>#${o.id}</strong></td>
-        <td>${o.customer_name || o.full_name}</td>
+        <td>${escapeHtml(o.customer_name || o.full_name)}</td>
         <td>Rs ${parseFloat(o.total).toFixed(2)}</td>
-        <td><span class="status-pill status-${(o.status || 'pending').toLowerCase()}">${o.status}</span></td>
+        <td><span class="status-pill status-${(o.status || 'pending').toLowerCase()}">${escapeHtml(o.status)}</span></td>
         <td>${new Date(o.created_at).toLocaleDateString()}</td>
       </tr>`).join('');
 }
@@ -80,16 +129,16 @@ function editProduct(id, name, desc, price, img, cat, stock) {
 // --- PRODUCTS ---
 async function loadProducts() {
   try {
-    const products = await fetch(`${API}/products`).then(r => r.json());
+    const products = await fetch(`${API_BASE_URL}/products`, { headers: { ...authHeaders() } }).then(r => r.json());
     document.getElementById('productsBody').innerHTML = products.map(p => `
       <tr>
-        <td><img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/50'"/></td>
-        <td><strong>${p.name}</strong></td>
-        <td><span class="cat-tag">${p.category}</span></td>
+        <td><img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/50'"/></td>
+        <td><strong>${escapeHtml(p.name)}</strong></td>
+        <td><span class="cat-tag">${escapeHtml(p.category)}</span></td>
         <td>Rs ${parseFloat(p.price).toFixed(2)}</td>
         <td>${p.stock}</td>
         <td>
-          <button class="btn-edit" onclick="editProduct(${p.id}, '${p.name.replace(/'/g,"\\'")}', '${p.description.replace(/'/g,"\\'")}', ${p.price}, '${p.image_url}', '${p.category}', ${p.stock})">Edit</button>
+          <button class="btn-edit" onclick="editProduct(${p.id}, '${escapeForOnclick(p.name)}', '${escapeForOnclick(p.description)}', ${p.price}, '${escapeForOnclick(p.image_url)}', '${escapeForOnclick(p.category)}', ${p.stock})">Edit</button>
           <button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button>
         </td>
       </tr>`).join('');
@@ -107,12 +156,16 @@ async function saveProduct() {
 
   if (!name || !price || !category) { alert('Please fill Name, Price and Category!'); return; }
 
+  const submitBtn = document.getElementById('saveProductBtn');
+  const originalLabel = submitBtn ? submitBtn.textContent : '';
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
+
   try {
-    const url = id ? `${API}/products/${id}` : `${API}/products`;
+    const url = id ? `${API_BASE_URL}/products/${id}` : `${API_BASE_URL}/products`;
     const method = id ? 'PUT' : 'POST';
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name, description, price, image_url, category, stock })
     });
     if (res.ok) {
@@ -122,13 +175,20 @@ async function saveProduct() {
     } else {
       alert('Error saving product!');
     }
-  } catch { alert('Could not connect to server!'); }
+  } catch {
+    alert('Could not connect to server!');
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+  }
 }
 
 async function deleteProduct(id) {
   if (!confirm('Are you sure you want to delete this product?')) return;
   try {
-    await fetch(`${API}/products/${id}`, { method: 'DELETE' });
+    await fetch(`${API_BASE_URL}/products/${id}`, {
+      method: 'DELETE',
+      headers: { ...authHeaders() }
+    });
     loadProducts();
     alert('Product deleted!');
   } catch { alert('Error deleting product!'); }
@@ -137,13 +197,13 @@ async function deleteProduct(id) {
 // --- ORDERS ---
 async function loadOrders() {
   try {
-    const orders = await fetch(`${API}/orders`).then(r => r.json());
+    const orders = await fetch(`${API_BASE_URL}/orders`, { headers: { ...authHeaders() } }).then(r => r.json());
     document.getElementById('ordersBody').innerHTML = orders.map(o => `
       <tr>
         <td><strong>#${o.id}</strong></td>
-        <td>${o.customer_name || o.full_name}</td>
-        <td>${o.phone}</td>
-        <td>${o.address}</td>
+        <td>${escapeHtml(o.customer_name || o.full_name)}</td>
+        <td>${escapeHtml(o.phone)}</td>
+        <td>${escapeHtml(o.address)}</td>
         <td>Rs ${parseFloat(o.total).toFixed(2)}</td>
         <td>${new Date(o.created_at).toLocaleDateString()}</td>
         <td>
@@ -160,9 +220,9 @@ async function loadOrders() {
 
 async function updateStatus(orderId, status) {
   try {
-    await fetch(`${API}/orders/${orderId}/status`, {
+    await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ status })
     });
     alert('Order status updated to: ' + status);
@@ -196,6 +256,14 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   const yy = String(d.getFullYear()).slice(-2);
   el.textContent = `${dd} ${mm} ${yy}`;
 })();
+
+// Close mobile sidebar menu if user taps outside it
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('sidebarMenuWrap');
+  const burger = document.getElementById('sidebarBurger');
+  if (!wrap || !wrap.classList.contains('open')) return;
+  if (!wrap.contains(e.target) && !burger.contains(e.target)) closeAdminNav();
+});
 
 // Initialize dashboard
 loadStats();

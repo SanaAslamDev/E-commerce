@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Click Cart - Shop Smart, Live Better</title>
     <link rel="stylesheet" href="style.css" />
-   
+    <script>
+      // Set this to your deployed backend URL before going to production.
+      // Falls back to localhost:5500 for local development only.
+      window.CLICK_CART_API_BASE = window.CLICK_CART_API_BASE || "http://localhost:5500";
+    </script>
   </head>
   <body>
     <!-- =========================
@@ -68,8 +72,17 @@
           <button class="btn-solid" onclick="openModal('registerModal')">
             Register
           </button>
+          <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </nav>
+      <div class="mobile-nav-panel" id="mobileNavPanel">
+        <a href="index.html">Home</a>
+        <a href="#categories" onclick="closeMobileNav()">Categories</a>
+        <a href="#about" onclick="closeMobileNav()">About</a>
+        <a href="#footer" onclick="closeMobileNav()">Contact</a>
+      </div>
 
       <!-- HERO -->
       <section class="hero">
@@ -122,69 +135,69 @@
       
       <!-- FIRST LOOP GRID -->
       <div class="categories-grid">
-        <div class="category-card" onclick="goToCategory('Electronics')">
+        <div class="category-card" onclick="goToCategory('Electronics')" tabindex="0" role="button" aria-label="Shop Electronics" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Electronics');}">
           <span class="cat-badge">Tech</span>
           <img src="images/electronics.jpg" alt="Electronics" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Electronics <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Accessories')">
+        <div class="category-card" onclick="goToCategory('Accessories')" tabindex="0" role="button" aria-label="Shop Accessories" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Accessories');}">
           <span class="cat-badge">Chic</span>
           <img src="images/accessories.jpg" alt="Accessories" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Accessories <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Fashion')">
+        <div class="category-card" onclick="goToCategory('Fashion')" tabindex="0" role="button" aria-label="Shop Fashion" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Fashion');}">
           <span class="cat-badge">Trend</span>
           <img src="images/fashion.jpg" alt="Fashion" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Fashion <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Cosmetics')">
+        <div class="category-card" onclick="goToCategory('Cosmetics')" tabindex="0" role="button" aria-label="Shop Cosmetics" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Cosmetics');}">
           <span class="cat-badge">Care</span>
           <img src="images/cosmetics.jpg" alt="Cosmetics" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Cosmetics <span class="cat-arrow">→</span></span>
         </div>
-        <!-- Added Home Appliances -->
-        <div class="category-card" onclick="goToCategory('Appliances')">
+       
+        <div class="category-card" onclick="goToCategory('Appliances')" tabindex="0" role="button" aria-label="Shop Appliances" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Appliances');}">
           <span class="cat-badge">Smart Home</span>
-          <img src="images/appliances.jpg" alt="Home Appliances" />
+          <img src="images/appliances.jpg" alt="Appliances" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Appliances <span class="cat-arrow">→</span></span>
         </div>
       </div>
 
       <!-- DUPLICATE LOOP GRID (For seamless continuous marquee scrolling) -->
-      <div class="categories-grid">
-        <div class="category-card" onclick="goToCategory('Electronics')">
+      <div class="categories-grid" aria-hidden="true">
+        <div class="category-card" onclick="goToCategory('Electronics')" tabindex="-1">
           <span class="cat-badge">Tech</span>
-          <img src="images/electronics.jpg" alt="Electronics" />
+          <img src="images/electronics.jpg" alt="" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Electronics <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Accessories')">
+        <div class="category-card" onclick="goToCategory('Accessories')" tabindex="-1">
           <span class="cat-badge">Chic</span>
-          <img src="images/accessories.jpg" alt="Accessories" />
+          <img src="images/accessories.jpg" alt="" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Accessories <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Fashion')">
+        <div class="category-card" onclick="goToCategory('Fashion')" tabindex="-1">
           <span class="cat-badge">Trend</span>
-          <img src="images/fashion.jpg" alt="Fashion" />
+          <img src="images/fashion.jpg" alt="" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Fashion <span class="cat-arrow">→</span></span>
         </div>
-        <div class="category-card" onclick="goToCategory('Cosmetics')">
+        <div class="category-card" onclick="goToCategory('Cosmetics')" tabindex="-1">
           <span class="cat-badge">Care</span>
-          <img src="images/cosmetics.jpg" alt="Cosmetics" />
+          <img src="images/cosmetics.jpg" alt="" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Cosmetics <span class="cat-arrow">→</span></span>
         </div>
-        <!-- Added Home Appliances -->
-        <div class="category-card" onclick="goToCategory('Appliances')">
+       
+        <div class="category-card" onclick="goToCategory('Appliances')" tabindex="-1">
           <span class="cat-badge">Smart Home</span>
-          <img src="images/appliances.jpg" alt="Home Appliances" />
+          <img src="images/appliances.jpg" alt="" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Appliances <span class="cat-arrow">→</span></span>
         </div>
@@ -241,6 +254,42 @@
             </div>
             <h3>Easy Returns</h3>
             <p>No stress. No overthinking.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="about-section" id="about">
+        <div class="about-inner">
+          <div class="about-media fade-up">
+            <img class="about-img-main" src="images/img1.jpg" alt="Click Cart curated products on display" />
+            <div class="about-note">
+              <span class="about-note-star">★★★★★</span>
+              <p class="about-note-title">Trusted by 50K+<br/>happy customers</p>
+              <div class="about-note-divider"></div>
+            </div>
+          </div>
+          <div class="about-copy fade-up">
+            <span class="about-eyebrow">Our Story</span>
+            <h2 class="section-title">About <span>Click Cart</span></h2>
+            <p>
+              Click Cart started with a simple idea: shopping online shouldn't feel like sorting through clutter.
+              We hand-pick every product in our catalog — electronics, accessories, fashion, cosmetics, and
+              appliances — so your cart always feels curated, never crowded.
+            </p>
+            <p>
+              From fast checkout to easy returns, every part of the experience is built around one goal:
+              helping you shop smart and live better.
+            </p>
+          </div>
+          <div class="about-stamp fade-up">
+            <svg viewBox="0 0 100 100">
+              <path id="aboutStampPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none"/>
+              <text font-size="7.5" letter-spacing="2">
+                <textPath href="#aboutStampPath" startOffset="2%">CURATED &#8226; SINCE &#8226; 2026 &#8226;</textPath>
+              </text>
+              <text x="50" y="55" text-anchor="middle" font-size="16">CC</text>
+            </svg>
           </div>
         </div>
       </section>
@@ -306,14 +355,14 @@
               <li><a href="#" onclick="goToCategory('Accessories')">Accessories</a></li>
               <li><a href="#" onclick="goToCategory('Fashion')">Fashion</a></li>
               <li><a href="#" onclick="goToCategory('Cosmetics')">Cosmetics</a></li>
-              <li><a href="#" onclick="goToCategory('Home Appliances')">Home Appliances</a></li>
+              <li><a href="#" onclick="goToCategory('Appliances')">Appliances</a></li>
             </ul>
           </div>
           <div>
             <h4>Contact</h4>
            <ul>
-            <li><a href="#">support@clickcart.com</a></li>
-             <li><a href="#">+92 300 0000000</a></li>
+            <li><a href="mailto:support@clickcart.com">support@clickcart.com</a></li>
+             <li><a href="tel:+923000000000">+92 300 0000000</a></li>
               <li><a href="#">Multan, Pakistan</a></li>
            </ul>
           </div>
@@ -330,7 +379,7 @@
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="loginModal">
       <div class="modal modal-split">
-        <button class="close-btn" onclick="closeModal('loginModal')">
+        <button class="close-btn" onclick="closeModal('loginModal')" aria-label="Close">
           &#x2715;
         </button>
         <div class="modal-side" style="background-image:url(images/login.jpg)">
@@ -350,15 +399,17 @@
         </div>
         <div class="modal-form">
           <h2 class="modal-form-title">Login</h2>
-          <div class="error-msg" id="loginError"></div>
-          <label class="modal-label">Email Address</label>
-          <input type="email" id="loginEmail" placeholder="Enter your email" />
-          <label class="modal-label">Password</label>
-          <div class="modal-password-wrap">
-            <input type="password" id="loginPassword" placeholder="Enter your password" />
-          </div>
-          <a class="modal-forgot" href="#">Forgot Password?</a>
-          <button class="btn-submit" onclick="handleLogin()">Login</button>
+          <div class="error-msg" id="loginError" role="alert"></div>
+          <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+            <label class="modal-label" for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" autocomplete="email" required />
+            <label class="modal-label" for="loginPassword">Password</label>
+            <div class="modal-password-wrap">
+              <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" autocomplete="current-password" required />
+            </div>
+            <a class="modal-forgot" href="#">Forgot Password?</a>
+            <button type="submit" class="btn-submit" id="loginSubmitBtn">Login</button>
+          </form>
           <p>
             Don't have an account?
             <a onclick="switchModal('loginModal', 'registerModal')">Register</a>
@@ -370,7 +421,7 @@
     <!-- REGISTER MODAL -->
     <div class="modal-overlay" id="registerModal">
       <div class="modal modal-split">
-        <button class="close-btn" onclick="closeModal('registerModal')">
+        <button class="close-btn" onclick="closeModal('registerModal')" aria-label="Close">
           &#x2715;
         </button>
         <div class="modal-side" style="background-image:url('images/login.jpg')">
@@ -390,14 +441,16 @@
         </div>
         <div class="modal-form">
           <h2 class="modal-form-title">Register</h2>
-          <div class="error-msg" id="registerError"></div>
-          <label class="modal-label">Full Name</label>
-          <input type="text" id="registerName" placeholder="Enter your full name" />
-          <label class="modal-label">Email Address</label>
-          <input type="email" id="registerEmail" placeholder="Enter your email" />
-          <label class="modal-label">Password</label>
-          <input type="password" id="registerPassword" placeholder="Create a password" />
-          <button class="btn-submit" onclick="handleRegister()">Register</button>
+          <div class="error-msg" id="registerError" role="alert"></div>
+          <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();">
+            <label class="modal-label" for="registerName">Full Name</label>
+            <input type="text" id="registerName" name="registerName" placeholder="Enter your full name" autocomplete="name" required />
+            <label class="modal-label" for="registerEmail">Email Address</label>
+            <input type="email" id="registerEmail" name="registerEmail" placeholder="Enter your email" autocomplete="email" required />
+            <label class="modal-label" for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" name="registerPassword" placeholder="Create a password" autocomplete="new-password" required />
+            <button type="submit" class="btn-submit" id="registerSubmitBtn">Register</button>
+          </form>
           <p>
             Already have an account?
             <a onclick="switchModal('registerModal', 'loginModal')">Login</a>
