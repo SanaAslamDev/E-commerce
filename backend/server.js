@@ -9,14 +9,55 @@ const pool = require('./db');
 const app = express();
 
 // Middleware - allows our server to read JSON and talk to frontend
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5500',
+  credentials: true
+}));
 app.use(express.json());
+
+// ==================== AUTH MIDDLEWARE ====================
+
+// Verifies the JWT sent by the frontend in the Authorization header.
+// Without this, anyone could call protected routes with no login at all.
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ message: 'Invalid or expired token' });
+  }
+}
+
+// Must run AFTER authenticate — checks the role embedded in the verified token.
+function requireAdmin(req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+}
 
 // ==================== AUTH ROUTES ====================
 
 // REGISTER - creates a new user account
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters' });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
   try {
     // Check if email already exists
     const existing = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -25,19 +66,25 @@ app.post('/register', async (req, res) => {
     }
     // Encrypt the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await pool.query(
+    await pool.query(
       'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, email, hashedPassword, 'user']
     );
     res.json({ message: 'Account created successfully!' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // LOGIN - checks email and password
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
   try {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rows.length === 0) {
@@ -57,24 +104,31 @@ app.post('/login', async (req, res) => {
     );
     res.json({ token, user: { id: user.id, name: user.name, role: user.role } });
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
-// DELETE PROFILE
-app.delete('/user/:id', async (req, res) => {
+// DELETE PROFILE - user can only delete their own account
+app.delete('/user/:id', authenticate, async (req, res) => {
   const { id } = req.params;
+
+  if (req.user.id !== Number(id)) {
+    return res.status(403).json({ message: 'You can only delete your own account' });
+  }
+
   try {
     await pool.query('DELETE FROM users WHERE id = $1', [id]);
     res.json({ message: 'Account deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // ==================== PRODUCT ROUTES ====================
 
-// GET ALL PRODUCTS (with optional search and category filter)
+// GET ALL PRODUCTS (public - with optional search and category filter)
 app.get('/products', async (req, res) => {
   const { search, category } = req.query;
   try {
@@ -91,12 +145,13 @@ app.get('/products', async (req, res) => {
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // ADD PRODUCT (admin only)
-app.post('/products', async (req, res) => {
+app.post('/products', authenticate, requireAdmin, async (req, res) => {
   const { name, description, price, image_url, category, stock } = req.body;
   try {
     const result = await pool.query(
@@ -105,12 +160,13 @@ app.post('/products', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // UPDATE PRODUCT (admin only)
-app.put('/products/:id', async (req, res) => {
+app.put('/products/:id', authenticate, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, description, price, image_url, category, stock } = req.body;
   try {
@@ -120,54 +176,97 @@ app.put('/products/:id', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // DELETE PRODUCT (admin only)
-app.delete('/products/:id', async (req, res) => {
+app.delete('/products/:id', authenticate, requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query('DELETE FROM products WHERE id = $1', [id]);
     res.json({ message: 'Product deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
 // ==================== ORDER ROUTES ====================
 
-// PLACE ORDER
+// PLACE ORDER (public - guests can checkout too)
+// Total is recalculated server-side from the real product prices, and stock
+// is checked before the order is created, instead of trusting whatever the
+// client sends. The whole thing runs in a transaction so a mid-loop failure
+// can't leave a half-created order or partially-decremented stock behind.
 app.post('/orders', async (req, res) => {
-  const { user_id, full_name, phone, address, total, items } = req.body;
+  const { user_id, full_name, phone, address, items } = req.body;
+
+  if (!full_name || !phone || !address || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ message: 'Missing required order details' });
+  }
+
+  const client = await pool.connect();
   try {
-    // Create the order
-    const orderResult = await pool.query(
+    await client.query('BEGIN');
+
+    let total = 0;
+    const verifiedItems = [];
+
+    for (let item of items) {
+      const productResult = await client.query('SELECT * FROM products WHERE id = $1', [item.product_id]);
+      const product = productResult.rows[0];
+
+      if (!product) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ message: `Product ${item.product_id} not found` });
+      }
+      if (product.stock < item.quantity) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ message: `${product.name} doesn't have enough stock` });
+      }
+
+      total += parseFloat(product.price) * item.quantity;
+      verifiedItems.push({ product_id: product.id, quantity: item.quantity, price: product.price });
+    }
+
+    const orderResult = await client.query(
       'INSERT INTO orders (user_id, full_name, phone, address, total) VALUES ($1,$2,$3,$4,$5) RETURNING *',
       [user_id, full_name, phone, address, total]
     );
     const order = orderResult.rows[0];
-    // Add each item to order_items table
-    for (let item of items) {
-      await pool.query(
+
+    for (let item of verifiedItems) {
+      await client.query(
         'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1,$2,$3,$4)',
         [order.id, item.product_id, item.quantity, item.price]
       );
-      // Reduce stock
-      await pool.query(
+      await client.query(
         'UPDATE products SET stock = stock - $1 WHERE id = $2',
         [item.quantity, item.product_id]
       );
     }
+
+    await client.query('COMMIT');
     res.json({ message: `Thank you ${full_name}! Your order has been placed.`, order });
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ message: 'Could not place order. Please try again.' });
+  } finally {
+    client.release();
   }
 });
 
-// GET USER ORDERS
-app.get('/orders/user/:user_id', async (req, res) => {
+// GET USER ORDERS - user can only view their own orders
+app.get('/orders/user/:user_id', authenticate, async (req, res) => {
   const { user_id } = req.params;
+
+  if (req.user.id !== Number(user_id)) {
+    return res.status(403).json({ message: 'You can only view your own orders' });
+  }
+
   try {
     const result = await pool.query(
       'SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC',
@@ -175,24 +274,26 @@ app.get('/orders/user/:user_id', async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
-// GET ALL ORDERS (admin)
-app.get('/orders', async (req, res) => {
+// GET ALL ORDERS (admin only)
+app.get('/orders', authenticate, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT orders.*, users.name as customer_name FROM orders LEFT JOIN users ON orders.user_id = users.id ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
-// UPDATE ORDER STATUS (admin)
-app.put('/orders/:id/status', async (req, res) => {
+// UPDATE ORDER STATUS (admin only)
+app.put('/orders/:id/status', authenticate, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
@@ -202,7 +303,8 @@ app.put('/orders/:id/status', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -211,4 +313,3 @@ const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-

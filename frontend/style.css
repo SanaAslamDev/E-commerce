@@ -1423,7 +1423,7 @@ footer {
 }
 .modal-overlay.active .modal { transform: translateY(0) scale(1); }
 
-.modal h2 { font-family: var(--logo-font); font-size: 1.8rem; font-weight: 700; margin-bottom: 24px; color: var(--text); }
+.modal h2 { font-family: var(--logo-font); font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; color: var(--text); }
 .modal input {
   width: 100%; padding: 15px 16px; background: var(--white);
   border: 1px solid var(--border); border-radius: 8px;
@@ -1531,7 +1531,7 @@ line-height:1.7; text-align: center; }
 .modal-side-stamp text { fill: currentColor; font-family: var(--font-para); }
 .modal-side-cc { font-family: var(--font-para) !important; font-weight: 700; }
 
-.modal-form { padding: 44px 38px; }
+.modal-form { padding: 44px 38px; line-height: 1;}
 .modal-form-title { font-family: var(--logo-font); font-size: 2rem; font-weight: 700; margin-bottom: 22px; }
 .modal-forgot {
   display: block; text-align: right; font-family: "Kameron", serif; font-size: 0.74rem; color: var(--muted-dark); margin: -2px 0 18px;

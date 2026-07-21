@@ -1,4 +1,4 @@
-const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5500';
+const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5000';
 
 document.addEventListener("DOMContentLoaded", () => {
 
