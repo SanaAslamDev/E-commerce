@@ -6,6 +6,8 @@ let allProducts = [];
 let currentCategory = '';
 const user = JSON.parse(localStorage.getItem('user'));
 
+
+
 // --- AUTH HEADER HELPER ---
 // Centralizes attaching the logged-in user's token so every authenticated
 // request (orders, profile deletion, order status) actually identifies the
@@ -93,7 +95,7 @@ function displayProducts(products) {
   grid.innerHTML = products.map(p => `
     <div class="product-card">
       <div class="product-img-wrap">
-        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'"/>
+        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'"/>
         <span class="stock-badge ${p.stock > 0 ? 'in-stock' : 'out-stock'}">${p.stock > 0 ? 'In Stock' : 'Out of Stock'}</span>
       </div>
       <div class="product-info">
@@ -109,9 +111,13 @@ function displayProducts(products) {
     </div>`).join('');
 }
 
+let searchDebounce;
 function searchProducts() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  displayProducts(allProducts.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)));
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    displayProducts(allProducts.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)));
+  }, 200);
 }
 
 function filterCategory(cat) {
@@ -282,9 +288,9 @@ async function showOrders() {
 function handleLogout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem(CART_STORAGE_KEY);
   window.location.href = 'index.html';
 }
-
 async function deleteProfile() {
   if (!confirm('Are you sure you want to delete your account? This cannot be undone!')) return;
   try {

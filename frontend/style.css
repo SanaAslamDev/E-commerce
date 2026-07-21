@@ -2,7 +2,6 @@
    GOOGLE FONTS IMPORT
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=BJCree:wght@400;500;600;700&family=Cinzel:wght@400..900&family=Dancing+Script:wght@400..700&family=Kameron:wght@400..700&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Oswald:wght@200..700&family=Playwrite+ID:wght@100..400&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Tangerine:wght@400;700&display=swap');
 
 /* ============================================================
    CSS VARIABLES 
@@ -13,7 +12,7 @@
   --bg-dark: #503a25;
   --text: #503a25;
   --text-light: #f4efea;
-  --muted: #9e948b;
+  --muted: #756a5e;
   --muted-dark: #6e5034;
   --accent: #d5b58c;
   --accent-dark: #b59265;
@@ -1111,6 +1110,26 @@ font-family: "Playwrite ID", cursive;
     max-width: 280px;
     margin: 0 auto;
   }
+
+  /* Note card needs its own sizing here — the 65%/10px values from
+     the 768px query are too tight once the image shrinks to 280px,
+     causing the text to wrap awkwardly against the edge. */
+  .about-note {
+    right: -15px;
+    bottom: -20px;
+    width: 70%;
+    padding: 12px 14px;
+   
+  }
+
+  .about-note-star {
+    font-size: 0.75rem;
+  }
+
+  .about-note-title {
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
 }
 
 /* ============================================================
@@ -1132,7 +1151,7 @@ font-family: "Playwrite ID", cursive;
   font-size: clamp(1.8rem, 3vw, 2.6rem);
        font-family: var(--logo-font);
 }
-.features-section .section-title span { display: block; color: var(--accent); }
+.features-section .section-title span { display: block;  color: var(--accent); }
 
 .features-grid {
   display: flex;

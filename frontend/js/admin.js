@@ -132,7 +132,7 @@ async function loadProducts() {
     const products = await fetch(`${API_BASE_URL}/products`, { headers: { ...authHeaders() } }).then(r => r.json());
     document.getElementById('productsBody').innerHTML = products.map(p => `
       <tr>
-        <td><img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/50'"/></td>
+        <td><img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/50'"/></td>
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td><span class="cat-tag">${escapeHtml(p.category)}</span></td>
         <td>Rs ${parseFloat(p.price).toFixed(2)}</td>
@@ -154,7 +154,9 @@ async function saveProduct() {
   const category = document.getElementById('productCategory').value;
   const stock = document.getElementById('productStock').value;
 
+
   if (!name || !price || !category) { alert('Please fill Name, Price and Category!'); return; }
+if (Number(price) < 0 || (stock && Number(stock) < 0)) { alert('Price and stock cannot be negative!'); return; }
 
   const submitBtn = document.getElementById('saveProductBtn');
   const originalLabel = submitBtn ? submitBtn.textContent : '';

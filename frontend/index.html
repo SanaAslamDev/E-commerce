@@ -3,8 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Click Cart - Shop Smart, Live Better</title>
+ <meta
+  name="description"
+  content="Shop electronics, fashion, accessories, cosmetics, and home appliances at Click Cart. Discover quality products, secure shopping, and great deals in one place."
+/>
+  <title>Click Cart | Online Shopping for Electronics, Fashion & More</title>
     <link rel="stylesheet" href="style.css" />
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BJCree:wght@400;500;600;700&family=Cinzel:wght@400..900&family=Dancing+Script:wght@400..700&family=Kameron:wght@400..700&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Oswald:wght@200..700&family=Playwrite+ID:wght@100..400&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
     <script>
       // Set this to your deployed backend URL before going to production.
       // Falls back to localhost:5500 for local development only.
@@ -18,14 +25,13 @@
 
     <div id="splash-screen">
       <div class="splash-card">
-        <div class="splash-tear splash-tear-top"></div>
-        <div class="splash-tear splash-tear-bottom"></div>
+       
         <span class="splash-ticket">Est. 2026</span>
 
         <div class="splash-frame">
           <p class="splash-eyebrow">Curated. Collected. Timeless.</p>
 
-          <h1 class="splash-brand">Click Cart</h1>
+        <p class="splash-brand">Click Cart</p>
 
           <p class="splash-tagline">Click it. Cart it. Own it</p>
 
@@ -90,8 +96,7 @@
           <span class="hero-tag">New Arrivals 2026</span>
           <h1>Don't Just Shop.<br /><span>Make It Iconic.</span></h1>
           <p>
-            Statement pieces, everyday upgrades, and curated finds that make
-            your cart feel like a flex — delivered fast, styled better.
+            Thoughtfully chosen pieces that feel just as right today as they will tomorrow.
           </p>
           <div class="hero-buttons">
             <button class="btn-main" onclick="goToShop()">Shop Now</button>
@@ -115,7 +120,7 @@
           </div>
         </div>
         <div class="hero-image">
-          <img src="images/hero.jpg" alt="Editor's pick" />
+          <img src="images/hero.jpg" alt="Editor's pick"  />
           <span class="hero-image-tag">Editor's Pick</span>
         </div>
       </section>
@@ -126,7 +131,7 @@
   <div class="section-header">
     <h2 class="section-title">Shop the <span>Click Cart</span></h2>
     <p class="section-subtitle">
-      Less scrolling. More discovering. Everything feels handpicked.
+      Browse the edit. Pick your vibe. Make it yours.
     </p>
   </div>
 
@@ -137,32 +142,32 @@
       <div class="categories-grid">
         <div class="category-card" onclick="goToCategory('Electronics')" tabindex="0" role="button" aria-label="Shop Electronics" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Electronics');}">
           <span class="cat-badge">Tech</span>
-          <img src="images/electronics.jpg" alt="Electronics" />
+          <img src="images/electronics.jpg" alt="Electronics" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Electronics <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Accessories')" tabindex="0" role="button" aria-label="Shop Accessories" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Accessories');}">
           <span class="cat-badge">Chic</span>
-          <img src="images/accessories.jpg" alt="Accessories" />
+          <img src="images/accessories.jpg" alt="Accessories" loading="lazy"/>
           <div class="cat-overlay"></div>
           <span class="cat-label">Accessories <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Fashion')" tabindex="0" role="button" aria-label="Shop Fashion" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Fashion');}">
           <span class="cat-badge">Trend</span>
-          <img src="images/fashion.jpg" alt="Fashion" />
+          <img src="images/fashion.jpg" alt="Fashion" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Fashion <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Cosmetics')" tabindex="0" role="button" aria-label="Shop Cosmetics" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Cosmetics');}">
           <span class="cat-badge">Care</span>
-          <img src="images/cosmetics.jpg" alt="Cosmetics" />
+          <img src="images/cosmetics.jpg" alt="Cosmetics" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Cosmetics <span class="cat-arrow">→</span></span>
         </div>
        
         <div class="category-card" onclick="goToCategory('Appliances')" tabindex="0" role="button" aria-label="Shop Appliances" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToCategory('Appliances');}">
           <span class="cat-badge">Smart Home</span>
-          <img src="images/appliances.jpg" alt="Appliances" />
+          <img src="images/appliances.jpg" alt="Appliances" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Appliances <span class="cat-arrow">→</span></span>
         </div>
@@ -172,32 +177,32 @@
       <div class="categories-grid" aria-hidden="true">
         <div class="category-card" onclick="goToCategory('Electronics')" tabindex="-1">
           <span class="cat-badge">Tech</span>
-          <img src="images/electronics.jpg" alt="" />
+          <img src="images/electronics.jpg" alt="" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Electronics <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Accessories')" tabindex="-1">
           <span class="cat-badge">Chic</span>
-          <img src="images/accessories.jpg" alt="" />
+          <img src="images/accessories.jpg" alt="" loading="lazy" />
           <div class="cat-overlay"></div>
           <span class="cat-label">Accessories <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Fashion')" tabindex="-1">
           <span class="cat-badge">Trend</span>
-          <img src="images/fashion.jpg" alt="" />
+          <img src="images/fashion.jpg" alt="" loading="lazy"/>
           <div class="cat-overlay"></div>
           <span class="cat-label">Fashion <span class="cat-arrow">→</span></span>
         </div>
         <div class="category-card" onclick="goToCategory('Cosmetics')" tabindex="-1">
           <span class="cat-badge">Care</span>
-          <img src="images/cosmetics.jpg" alt="" />
+          <img src="images/cosmetics.jpg" alt="" loading="lazy"/>
           <div class="cat-overlay"></div>
           <span class="cat-label">Cosmetics <span class="cat-arrow">→</span></span>
         </div>
        
         <div class="category-card" onclick="goToCategory('Appliances')" tabindex="-1">
           <span class="cat-badge">Smart Home</span>
-          <img src="images/appliances.jpg" alt="" />
+          <img src="images/appliances.jpg" alt="" loading="lazy"/>
           <div class="cat-overlay"></div>
           <span class="cat-label">Appliances <span class="cat-arrow">→</span></span>
         </div>
@@ -224,7 +229,7 @@
               </svg>
             </div>
             <h3>Fast, Not Fussy</h3>
-            <p>Quick checkout. No drama.</p>
+            <p>No waiting. No friction.</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon-wrap">
@@ -233,8 +238,8 @@
                 <polyline points="9 12 11 14 15 10" />
               </svg>
             </div>
-            <h3>Checkout Feels Safe</h3>
-            <p>Secure payments. Always.</p>
+            <h3>Shop Securely</h3>
+            <p>Every checkout stays protected.</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon-wrap">
@@ -243,7 +248,7 @@
               </svg>
             </div>
             <h3>Only Good Stuff</h3>
-            <p>Handpicked. Always.</p>
+            <p>Pieces chosen to stay.</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon-wrap">
@@ -252,8 +257,8 @@
                 <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
               </svg>
             </div>
-            <h3>Easy Returns</h3>
-            <p>No stress. No overthinking.</p>
+            <h3>Stress-Free Returns</h3>
+            <p>Because plans change.</p>
           </div>
         </div>
       </section>
@@ -262,7 +267,7 @@
       <section class="about-section" id="about">
         <div class="about-inner">
           <div class="about-media fade-up">
-            <img class="about-img-main" src="images/img1.jpg" alt="Click Cart curated products on display" />
+            <img class="about-img-main" src="images/img1.jpg" alt="Click Cart curated products on display" loading="lazy" />
             <div class="about-note">
               <span class="about-note-star">★★★★★</span>
               <p class="about-note-title">Trusted by 50K+<br/>happy customers</p>
@@ -273,13 +278,10 @@
             <span class="about-eyebrow">Our Story</span>
             <h2 class="section-title">About <span>Click Cart</span></h2>
             <p>
-              Click Cart started with a simple idea: shopping online shouldn't feel like sorting through clutter.
-              We hand-pick every product in our catalog — electronics, accessories, fashion, cosmetics, and
-              appliances — so your cart always feels curated, never crowded.
+             <strong>Endless scrolling gets old.</strong> Click Cart is where you'll find the pieces worth stopping for. From fashion and beauty to tech and home essentials, every collection is thoughtfully curated to make discovering something you love feel effortless.
             </p>
             <p>
-              From fast checkout to easy returns, every part of the experience is built around one goal:
-              helping you shop smart and live better.
+             <strong>We're not here to give you more choices—we're here to help you find the right ones.</strong> Beautifully chosen, made to belong, and always worth keeping.
             </p>
           </div>
           <div class="about-stamp fade-up">
@@ -297,10 +299,13 @@
       <!-- CTA -->
       <section class="cta-section">
         <div class="cta-copy">
-          <h2 class="section-title">Ready to Elevate<br /><span>Your Shopping Experience?</span></h2>
-          <p>Discover carefully selected products designed for people who appreciate aesthetics, quality and simplicity.</p>
+          <h2 class="section-title">FOUND YOUR FAVORITE?<br /><span>The next favorite is waiting...</span></h2>
+          <p>Good things have a way of finding you.
+The rest is just timing.
+Take home what feels right.
+Leave with something you'll love.</p>
           <div class="cta-buttons">
-            <button class="btn-main" onclick="goToShop()">Shop Collection</button>
+            <button class="btn-main" onclick="goToShop()">Browse the Collection</button>
             <button class="btn-secondary-dark" onclick="scrollToElement('about')">Learn More</button>
           </div>
         </div>
@@ -309,7 +314,7 @@
             <path d="M40 70 L46 30 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="2.5"/>
             <path d="M126 70 L132 30 a14 14 0 0 0 -28 0" fill="none" stroke="currentColor" stroke-width="2.5"/>
             <path d="M30 70 H166 L156 200 H40 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
-            <text x="98" y="140" font-size="26" text-anchor="middle" fill="currentColor" style="font-family: var(--font-serif);">CC</text>
+            <text x="98" y="140" font-size="26" text-anchor="middle" fill="currentColor" style="font-family: var(--font-para);">CC</text>
             <path d="M150 40 q20 10 10 35" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
           </svg>
         </div>
@@ -321,7 +326,7 @@
           <div>
             <div class="footer-logo">Click Cart</div>
             <p class="footer-tagline">
-              Curated products for modern lifestyles.<br />Minimal. Elegant. Delivered with care.
+           Designed to be part of your everyday.<br />Simple things. Beautifully done.
             </p>
             <div class="footer-socials">
               <a href="#" aria-label="Instagram">
