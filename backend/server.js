@@ -1,4 +1,4 @@
-// Main server file - this is the brain of our website
+// Main server file 
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -187,6 +187,73 @@ app.delete('/products/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     await pool.query('DELETE FROM products WHERE id = $1', [id]);
     res.json({ message: 'Product deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ==================== WISHLIST ROUTES ====================
+// All wishlist routes require login — a wishlist only makes sense tied to
+// an account. Each route also checks that a user can only touch their OWN
+// wishlist (same pattern as the order routes above).
+
+// GET a user's wishlist — returns full product details, not just IDs,
+// so the frontend can render a wishlist page directly if  add one later.
+app.get('/wishlist/user/:user_id', authenticate, async (req, res) => {
+  const { user_id } = req.params;
+
+  if (req.user.id !== Number(user_id)) {
+    return res.status(403).json({ message: 'You can only view your own wishlist' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT products.* FROM wishlist
+       JOIN products ON wishlist.product_id = products.id
+       WHERE wishlist.user_id = $1
+       ORDER BY wishlist.created_at DESC`,
+      [user_id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ADD a product to the logged-in user's wishlist
+app.post('/wishlist', authenticate, async (req, res) => {
+  const { product_id } = req.body;
+
+  if (!product_id) {
+    return res.status(400).json({ message: 'product_id is required' });
+  }
+
+  try {
+    // ON CONFLICT DO NOTHING: if it's already wishlisted, this is a no-op
+    // instead of an error — keeps the frontend toggle logic simple.
+    await pool.query(
+      'INSERT INTO wishlist (user_id, product_id) VALUES ($1, $2) ON CONFLICT (user_id, product_id) DO NOTHING',
+      [req.user.id, product_id]
+    );
+    res.json({ message: 'Added to wishlist' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
+  }
+});
+
+// REMOVE a product from the logged-in user's wishlist
+app.delete('/wishlist/:product_id', authenticate, async (req, res) => {
+  const { product_id } = req.params;
+
+  try {
+    await pool.query(
+      'DELETE FROM wishlist WHERE user_id = $1 AND product_id = $2',
+      [req.user.id, product_id]
+    );
+    res.json({ message: 'Removed from wishlist' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Something went wrong. Please try again.' });

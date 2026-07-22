@@ -3,10 +3,7 @@ const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5000';
 const SECTIONS = ['dashboard', 'products', 'orders'];
 
 // --- AUTH HEADER HELPER ---
-// Every admin request now identifies the caller via the stored token
-// instead of relying purely on the client-side role check at the top of
-// admin.html (that check only hides the page — it does not protect the
-// API, so the server must verify this token/role on its end too).
+
 function authHeaders() {
   const token = localStorage.getItem('token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};

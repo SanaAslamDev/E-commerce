@@ -56,9 +56,7 @@ ul { list-style: none; }
 button {    font-family: "Oswald", sans-serif;  cursor: pointer; border: none; background: none; }
 input, textarea, select {     font-family: "Kameron", serif; }
 
-/* Visually-hidden utility: keeps content available to screen readers
-   (e.g. the Shop page's <h1> and the search <label>) without changing
-   the visual layout at all. */
+
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;
@@ -114,11 +112,7 @@ input, textarea, select {     font-family: "Kameron", serif; }
   animation: splashCardIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards, splashZoom 6s ease forwards;
 }
 
-/* The torn-paper background + jagged edges now live on this pseudo-element
-   instead of directly on .splash-card. Previously the clip-path sat on
-   .splash-card itself, which clipped away anything (like the ticket tag)
-   that overlapped the card's edge. Splitting it out fixes that without
-   changing how it looks. */
+
 .splash-card::before {
   content: "";
   position: absolute;
@@ -304,19 +298,21 @@ input, textarea, select {     font-family: "Kameron", serif; }
     padding: 18px clamp(24px, 4vw, 60px);
     background: rgba(244, 239, 234, 0.92);
     backdrop-filter: blur(14px);
-    box-shadow: 0 1px 0 var(--border);
 
     transition: background var(--trans-med),
                 backdrop-filter var(--trans-med),
                 box-shadow var(--trans-med);
 
     gap: 24px;
-    flex-wrap: nowrap;      
+    flex-wrap: nowrap; 
+    border-bottom: 1.5px solid var(--border);
+         
 }
+
 
 .navbar.scrolled {
     background: rgba(244, 239, 234, 0.98);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 6px 20px rgba(181, 146, 101, 0.28);
 }
 
 .navbar .logo{
@@ -441,7 +437,7 @@ input, textarea, select {     font-family: "Kameron", serif; }
   right: 0;
   z-index: 999;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
@@ -469,6 +465,9 @@ input, textarea, select {     font-family: "Kameron", serif; }
 ========================== */
 @media (max-width:900px){
 
+  :root{
+        --nav-h:64px;
+    }
   .navbar{
     height:64px;
     padding:0 20px;
@@ -503,6 +502,9 @@ input, textarea, select {     font-family: "Kameron", serif; }
 ========================== */
 @media (max-width:640px){
 
+   :root{
+        --nav-h:58px;
+    }
   .navbar{
     height:58px;
     padding:0 14px;
@@ -541,7 +543,9 @@ input, textarea, select {     font-family: "Kameron", serif; }
 
 }
 @media (max-width: 360px) {
-
+ :root{
+        --nav-h:58px;
+    }
   .navbar{
     height:56px;
     padding:0 12px;
@@ -716,9 +720,7 @@ font-family: "Tangerine", cursive;
   }
 }
 
-/* ===========================
-   Mobile
-=========================== */
+
 /* ===========================
    Mobile
 =========================== */
@@ -759,7 +761,7 @@ font-family: "Tangerine", cursive;
     white-space:nowrap;
   }
 
-  /* Stats - One Line */
+  
   .hero-stats{
     display:flex;
     justify-content:space-between;
@@ -810,7 +812,7 @@ font-family: "Tangerine", cursive;
 
 }
 /* ============================================================
-   CATEGORIES — even 4-up grid with photo tag + arrow label
+   CATEGORIES 
    ============================================================ */
 .categories-section {
   padding: clamp(70px, 9vw, 120px) 0;
@@ -837,7 +839,7 @@ font-family: "Tangerine", cursive;
   font-style: italic; 
   font-family: "Tangerine", cursive; 
   font-weight: 500; 
-  color: #8c6239; /* Elegant brown theme color */
+  color: #8c6239; 
 }
 
 .section-subtitle {
@@ -884,7 +886,7 @@ font-family: "Tangerine", cursive;
   opacity: 1; 
   transform: translateY(0);
   
-  /* Initial transparent border to prevent shifting */
+ 
   border: 1.5px solid transparent; 
   transition: opacity 0.7s ease, transform 0.7s ease, box-shadow var(--trans-med, 0.3s ease), border-color 0.3s ease;
 }
@@ -901,7 +903,7 @@ font-family: "Tangerine", cursive;
 .category-card:hover,
 .category-card:focus-visible { 
   box-shadow: var(--shadow-md, 0 10px 20px rgba(0,0,0,0.08)); 
-  /* Elegant brown border on hover */
+  
   border-color: #8c6239; 
 }
 
@@ -937,7 +939,7 @@ font-family: "Tangerine", cursive;
   border-radius: 4px;
 }
 
-/* Solid ground style: Title and Arrow touch the white section perfectly */
+
 .cat-overlay {
   position: absolute;
   left: 0; 
@@ -1030,17 +1032,21 @@ font-family: "Tangerine", cursive;
   right: -24px; bottom: -30px;
   width: 55%;
   background: var(--white);
-  padding: 18px 16px;
   box-shadow: var(--shadow-lg);
-  transform: rotate(-2deg);
+  transform: rotate(-3deg);
+  padding-top: 18px;
+  padding-left: 25px;
+  padding-bottom: 18px;
+  padding-right: 10px;
+  display:inline-block;
 }
 .about-note-star { color: var(--accent-dark); font-size: 0.9rem; }
 .about-note-title {
 font-family: "Playwrite ID", cursive;
 
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 900;
-  line-height: 1.4;
+  line-height: 1.7;
   margin-top: 6px;
 }
 .about-note-divider { width: 24px; height: 1px; background: var(--accent-dark); margin-top: 10px; }
@@ -1084,10 +1090,13 @@ font-family: "Playwrite ID", cursive;
   }
 
   .about-note {
-    right: 4px;
-    bottom: -12px;
-    width: 65%;
-    padding: 10px;
+    right: -5px;
+        bottom: -40px;
+        width: 65%;
+        padding-top:6px;
+        padding-bottom: 6px;
+        padding-left: 15px;
+        padding-right: 4px;
   }
 
   .about-copy p {
@@ -1111,9 +1120,7 @@ font-family: "Playwrite ID", cursive;
     margin: 0 auto;
   }
 
-  /* Note card needs its own sizing here — the 65%/10px values from
-     the 768px query are too tight once the image shrinks to 280px,
-     causing the text to wrap awkwardly against the edge. */
+
   .about-note {
     right: -15px;
     bottom: -20px;
@@ -1192,7 +1199,7 @@ font-family: "Playwrite ID", cursive;
 }
 
 /* ============================================================
-   CTA — "Ready to elevate" banner
+   CTA 
    ============================================================ */
 .cta-section {
   background: var(--bg);
@@ -1226,7 +1233,7 @@ font-family: "Playwrite ID", cursive;
     align-items: center;
     text-align: center;
 
-    gap: 28px;          /* SVG aur content ke darmiyan gap */
+    gap: 28px;          
     padding: 48px 20px;
   }
 
@@ -1316,9 +1323,11 @@ footer {
 }
 @media (max-width: 768px) {
   .footer-grid { grid-template-columns: 1fr; }
-  .cta-section { flex-direction: column; text-align: center; }
+  .cta-section { flex-direction: column; text-align: center; gap: 32px; }
+  .cta-copy { flex: unset; width: 100%; }
   .cta-copy .section-title, .cta-copy p { text-align: center; margin-left: auto; margin-right: auto; }
   .cta-buttons { justify-content: center; }
+  .cta-media { flex: unset; width: 110px; margin: 0 auto; }
 }
 /* ======================================
    Footer 
@@ -1492,7 +1501,7 @@ line-height:1.7; text-align: center; }
 
 .error-msg { font-family: "Kameron", serif; font-size: 0.78rem; color: #b3402f; margin-bottom: 10px; min-height: 14px; }
 
-/* split card: kraft photo side + white form side */
+
 .modal-split {
   max-width: 760px;
   padding: 0;
@@ -1819,9 +1828,7 @@ display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08
 
 .sidebar-top { display: flex; align-items: center; justify-content: space-between; }
 
-/* Tablet & mobile: sidebar collapses to a single-line top bar (logo +
-   burger). The full menu lives in a slide-down panel underneath, opened
-   by the burger, instead of wrapping menu items into a cramped row. */
+
 @media (max-width: 992px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -2156,4 +2163,225 @@ font-size: 0.78rem; font-weight: 600; min-width: 12px; text-align: center; }
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: 1fr; }
   .shop-nav-actions { gap: 8px; }
+}
+
+/* ============================================================
+   PRODUCT CARD — now fully clickable (navigates to Product Details)
+   ============================================================ */
+.product-card {
+  cursor: pointer;
+}
+
+/* ============================================================
+   BREADCRUMB (Product Details page)
+   ============================================================ */
+.breadcrumb {
+  font-family: "Kameron", serif;
+  font-size: 0.78rem;
+  color: var(--muted-dark);
+  padding: 20px clamp(20px, 4vw, 60px) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.breadcrumb a {
+  color: var(--muted-dark);
+  transition: color var(--trans-fast);
+}
+.breadcrumb a:hover {
+  color: var(--accent-dark);
+}
+.breadcrumb .breadcrumb-current {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ============================================================
+   PRODUCT DETAILS PAGE
+   ============================================================ */
+.product-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 60px) clamp(60px, 8vw, 100px);
+}
+
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+}
+
+.product-detail-media {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+}
+.product-detail-img {
+  width: 100%;
+  aspect-ratio: 4 / 4.4;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  background: var(--bg-soft);
+}
+
+.product-detail-info {
+  padding-top: clamp(8px, 2vw, 24px);
+}
+.product-detail-info .product-category {
+  display: inline-block;
+  margin-bottom: 14px;
+}
+.product-detail-name {
+  font-family: var(--font-para);
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+.product-detail-info .price {
+  font-size: 1.5rem;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+.product-detail-desc {
+  font-family: "Kameron", serif;
+  font-size: 0.92rem;
+  color: var(--muted-dark);
+  line-height: 1.85;
+  max-width: 480px;
+  margin-bottom: 26px;
+}
+.product-detail-info .stock-badge {
+  position: static;
+  display: inline-block;
+  margin-bottom: 28px;
+}
+
+.product-detail-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.product-detail-actions .btn-add-cart {
+  flex: 1 1 220px;
+  padding: 16px 20px;
+}
+
+/* Wishlist button */
+.btn-wishlist {
+  flex: 1 1 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-dark);
+  background: transparent;
+  color: var(--text);
+  font-family: "Oswald", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background var(--trans-fast), color var(--trans-fast), border-color var(--trans-fast);
+}
+.btn-wishlist:hover {
+  background: var(--bg-soft);
+}
+.btn-wishlist svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+  transition: fill var(--trans-fast), stroke var(--trans-fast);
+}
+.btn-wishlist.active {
+  border-color: #b3402f;
+  color: #b3402f;
+}
+.btn-wishlist.active svg {
+  fill: #b3402f;
+  stroke: #b3402f;
+}
+
+@media (max-width: 860px) {
+  .product-detail-grid { grid-template-columns: 1fr; gap: 28px; }
+  .product-detail-media { position: static; }
+}
+@media (max-width: 480px) {
+  .product-detail-actions { flex-direction: column; }
+  .product-detail-actions .btn-add-cart,
+  .btn-wishlist { flex: 1 1 auto; width: 100%; }
+}
+
+/* ============================================================
+   WISHLIST MODAL 
+   ============================================================ */
+.wishlist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.wishlist-item:last-child {
+  border-bottom: none;
+}
+.wishlist-item img {
+  width: 64px;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg-soft);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.wishlist-item-info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+.wishlist-item-info h4 {
+  font-family: var(--font-para);
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.wishlist-item-info p {
+  font-family: "Manrope", sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted-dark);
+}
+.wishlist-item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.btn-add-cart-mini {
+  font-family: "Oswald", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--text-light);
+  white-space: nowrap;
+  transition: background var(--trans-fast);
+}
+.btn-add-cart-mini:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+.btn-add-cart-mini:disabled {
+  background: var(--border);
+  color: var(--muted-dark);
+  cursor: not-allowed;
 }

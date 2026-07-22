@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Click Cart - Shop</title>
+  <title>Click Cart - Product Details</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
+
 <nav class="shop-navbar">
   <a href="index.html" class="logo">Click Cart</a>
   <div class="search-bar" role="search">
@@ -23,7 +23,7 @@
       <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
     </svg>
     <label for="searchInput" class="sr-only">Search products</label>
-    <input type="text" id="searchInput" placeholder="Search products..." aria-label="Search products" oninput="searchProducts()" />
+    <input type="text" id="searchInput" placeholder="Search products..." aria-label="Search products" onkeydown="if(event.key==='Enter'){window.location.href='shop.html';}" />
   </div>
   <div class="shop-nav-actions">
     <button class="icon-btn" title="Wishlist" aria-label="View wishlist" onclick="openWishlistModal()">
@@ -50,20 +50,35 @@
   </div>
 </nav>
 
-<!-- SHOP -->
-<div class="shop-container">
-  <h1 class="sr-only">Shop All Products</h1>
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterCategory('')">All</button>
-    <button class="filter-btn" onclick="filterCategory('Electronics')">Electronics</button>
-    <button class="filter-btn" onclick="filterCategory('Accessories')">Accessories</button>
-    <button class="filter-btn" onclick="filterCategory('Fashion')">Fashion</button>
-    <button class="filter-btn" onclick="filterCategory('Cosmetics')">Cosmetics</button>
-    <button class="filter-btn" onclick="filterCategory('Appliances')">Appliances</button>
+<!-- BREADCRUMB -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+ <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <a href="shop.html" id="breadcrumbCategory"></a> / <span class="breadcrumb-current" id="breadcrumbName"></span>
+</nav>
+
+<!-- PRODUCT DETAILS -->
+<div class="product-detail-container">
+  <div class="product-detail-grid" id="productDetailGrid" style="display:none;">
+    <div class="product-detail-media">
+      <img class="product-detail-img" id="pdImage" src="" alt="" />
+    </div>
+    <div class="product-detail-info">
+      <span class="product-category" id="pdCategory"></span>
+      <h1 class="product-detail-name" id="pdName"></h1>
+      <div class="price" id="pdPrice"></div>
+      <p class="product-detail-desc" id="pdDescription"></p>
+      <span class="stock-badge" id="pdStock"></span>
+      <div class="product-detail-actions">
+        <button class="btn-add-cart" id="pdAddToCartBtn">Add to Cart</button>
+        <button class="btn-wishlist" id="pdWishlistBtn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+          </svg>
+          <span id="pdWishlistLabel">Add to Wishlist</span>
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="products-grid" id="productsGrid">
-    <p class="loading-text">Loading products...</p>
-  </div>
+  <p class="loading-text" id="productDetailLoading">Loading product...</p>
 </div>
 
 <!-- CART PANEL -->
@@ -147,7 +162,7 @@
   </div>
 </div>
 
-<script src="js/shop.js"></script>
+<script src="js/product.js"></script>
 
 </body>
 </html>

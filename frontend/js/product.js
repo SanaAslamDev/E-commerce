@@ -2,15 +2,31 @@ const API_BASE_URL = window.CLICK_CART_API_BASE || 'http://localhost:5000';
 const CART_STORAGE_KEY = 'clickCartCart';
 
 let cart = loadCartFromStorage();
-let allProducts = [];
-let currentCategory = '';
-let wishlistItemsCache = [];
 const user = JSON.parse(localStorage.getItem('user'));
+let currentProduct = null;
+let wishlistItemsCache = [];
 
 // --- AUTH HEADER HELPER ---
 function authHeaders() {
   const token = localStorage.getItem('token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// --- ESCAPING HELPERS ---
+function escapeForOnclick(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;');
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // --- CART PERSISTENCE ---
@@ -31,93 +47,201 @@ function saveCartToStorage() {
   }
 }
 
-// --- INIT ---
+// ==================== WISHLIST (product detail page heart button) ====================
+// Requires login — a wishlist only makes sense tied to an account.
+// These calls hit the /wishlist routes added to server.js.
+
+async function checkWishlistStatus(productId) {
+  if (!user) return false;
+  try {
+    const res = await fetch(`${API_BASE_URL}/wishlist/user/${user.id}`, {
+      headers: { ...authHeaders() }
+    });
+    if (!res.ok) return false;
+    const wishlist = await res.json();
+    return wishlist.some(p => p.id === productId);
+  } catch {
+    return false;
+  }
+}
+
+async function toggleWishlist(productId) {
+  if (!user) {
+    alert('Please login to use the wishlist.');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  const btn = document.getElementById('pdWishlistBtn');
+  const wasActive = btn.classList.contains('active');
+  btn.disabled = true;
+
+  try {
+    if (wasActive) {
+      await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+        method: 'DELETE',
+        headers: { ...authHeaders() }
+      });
+    } else {
+      await fetch(`${API_BASE_URL}/wishlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ product_id: productId })
+      });
+    }
+    renderWishlistButton(!wasActive);
+  } catch {
+    alert('Could not update wishlist. Please try again.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderWishlistButton(active) {
+  const btn = document.getElementById('pdWishlistBtn');
+  const label = document.getElementById('pdWishlistLabel');
+  if (!btn || !label) return;
+  btn.classList.toggle('active', active);
+  btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  label.textContent = active ? 'Remove from Wishlist' : 'Add to Wishlist';
+}
+
+// ==================== WISHLIST MODAL ====================
+
+
+async function openWishlistModal() {
+  if (!user) {
+    alert('Please login to view your wishlist.');
+    window.location.href = 'index.html';
+    return;
+  }
+  const listEl = document.getElementById('wishlistList');
+  listEl.innerHTML = '<p style="color:#999;">Loading wishlist...</p>';
+  document.getElementById('wishlistModal').classList.add('active');
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/wishlist/user/${user.id}`, {
+      headers: { ...authHeaders() }
+    });
+    wishlistItemsCache = await res.json();
+    renderWishlistModal();
+  } catch {
+    listEl.innerHTML = '<p style="color:#999;">Could not load wishlist.</p>';
+  }
+}
+
+function renderWishlistModal() {
+  const listEl = document.getElementById('wishlistList');
+  listEl.innerHTML = wishlistItemsCache.length === 0
+    ? '<p style="color:#999;">Your wishlist is empty.</p>'
+    : wishlistItemsCache.map(p => `
+      <div class="wishlist-item">
+        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/70'" onclick="window.location.href='product.html?id=${p.id}'"/>
+        <div class="wishlist-item-info" onclick="window.location.href='product.html?id=${p.id}'">
+          <h4>${escapeHtml(p.name)}</h4>
+          <p>Rs ${parseFloat(p.price).toFixed(2)}</p>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn-add-cart-mini" onclick="addToCart(${p.id}, '${escapeForOnclick(p.name)}', ${p.price}, '${escapeForOnclick(p.image_url)}')" ${p.stock === 0 ? 'disabled' : ''}>${p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}</button>
+          <button class="remove-item" onclick="removeFromWishlistModal(${p.id})" aria-label="Remove ${escapeForOnclick(p.name)} from wishlist">&#x2715;</button>
+        </div>
+      </div>`).join('');
+}
+
+async function removeFromWishlistModal(productId) {
+  try {
+    await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+      method: 'DELETE',
+      headers: { ...authHeaders() }
+    });
+    wishlistItemsCache = wishlistItemsCache.filter(p => p.id !== productId);
+    renderWishlistModal();
+
+    
+    if (currentProduct && currentProduct.id === productId) {
+      renderWishlistButton(false);
+    }
+  } catch {
+    alert('Could not remove item. Please try again.');
+  }
+}
+
+// ==================== PRODUCT DETAILS ====================
+async function loadProductDetails() {
+  const productId = Number(new URLSearchParams(window.location.search).get('id'));
+  const loadingEl = document.getElementById('productDetailLoading');
+  const gridEl = document.getElementById('productDetailGrid');
+
+  if (!productId) {
+    loadingEl.textContent = 'No product specified.';
+    return;
+  }
+
+  try {
+    
+    const res = await fetch(`${API_BASE_URL}/products`);
+    const products = await res.json();
+    const product = products.find(p => p.id === productId);
+
+    if (!product) {
+      loadingEl.textContent = 'Product not found.';
+      return;
+    }
+
+    currentProduct = product;
+    renderProduct(product);
+    loadingEl.style.display = 'none';
+    gridEl.style.display = 'grid';
+
+    const isWishlisted = await checkWishlistStatus(product.id);
+    renderWishlistButton(isWishlisted);
+  } catch {
+    loadingEl.textContent = 'Could not load product. Make sure server is running!';
+  }
+}
+
+function renderProduct(p) {
+  document.title = `Click Cart - ${p.name}`;
+
+  document.getElementById('pdImage').src = p.image_url;
+  document.getElementById('pdImage').alt = p.name;
+  document.getElementById('pdCategory').textContent = p.category;
+  document.getElementById('pdName').textContent = p.name;
+  document.getElementById('pdPrice').textContent = `Rs ${parseFloat(p.price).toFixed(2)}`;
+  document.getElementById('pdDescription').textContent = p.description;
+
+  const stockEl = document.getElementById('pdStock');
+  stockEl.textContent = p.stock > 0 ? `In Stock (${p.stock})` : 'Out of Stock';
+  stockEl.classList.add(p.stock > 0 ? 'in-stock' : 'out-stock');
+
+  const breadcrumbCategory = document.getElementById('breadcrumbCategory');
+  breadcrumbCategory.textContent = p.category;
+  breadcrumbCategory.href = `shop.html?category=${encodeURIComponent(p.category)}`;
+  document.getElementById('breadcrumbName').textContent = p.name;
+
+  const addToCartBtn = document.getElementById('pdAddToCartBtn');
+  if (p.stock === 0) {
+    addToCartBtn.disabled = true;
+    addToCartBtn.textContent = 'Out of Stock';
+  }
+  addToCartBtn.addEventListener('click', () => {
+    addToCart(p.id, p.name, p.price, p.image_url);
+  });
+
+  document.getElementById('pdWishlistBtn').addEventListener('click', () => {
+    toggleWishlist(p.id);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (user) {
     document.getElementById('userMenuSection').style.display = 'block';
     document.getElementById('guestSection').style.display = 'none';
     document.getElementById('userBtn').textContent = user.name;
   }
-  const cat = new URLSearchParams(window.location.search).get('category');
-  if (cat) {
-    currentCategory = cat;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === cat);
-    });
-  }
   updateCartUI();
-  loadProducts();
+  loadProductDetails();
 });
-
-// --- ESCAPING HELPERS ---
-function escapeForOnclick(str) {
-  return String(str)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '&quot;');
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// --- PRODUCTS ---
-async function loadProducts() {
-  try {
-    const url = currentCategory ? `${API_BASE_URL}/products?category=${encodeURIComponent(currentCategory)}` : `${API_BASE_URL}/products`;
-    const res = await fetch(url);
-    allProducts = await res.json();
-    displayProducts(allProducts);
-  } catch {
-    document.getElementById('productsGrid').innerHTML = '<p class="loading-text">Could not load products. Make sure server is running!</p>';
-  }
-}
-
-
-function displayProducts(products) {
-  const grid = document.getElementById('productsGrid');
-  if (!products.length) {
-    grid.innerHTML = '<p class="loading-text">No products found.</p>';
-    return;
-  }
-  grid.innerHTML = products.map(p => `
-    <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'">
-      <div class="product-img-wrap">
-        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'"/>
-        <span class="stock-badge ${p.stock > 0 ? 'in-stock' : 'out-stock'}">${p.stock > 0 ? 'In Stock' : 'Out of Stock'}</span>
-      </div>
-      <div class="product-info">
-        <span class="product-category">${escapeHtml(p.category)}</span>
-        <h3>${escapeHtml(p.name)}</h3>
-        <div class="price">Rs ${parseFloat(p.price).toFixed(2)}</div>
-       <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeForOnclick(p.name)}', ${p.price}, '${escapeForOnclick(p.image_url)}')" ${p.stock === 0 ? 'disabled' : ''}>
-          ${p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-        </button>
-      </div>
-    </div>`).join('');
-}
-
-let searchDebounce;
-function searchProducts() {
-  clearTimeout(searchDebounce);
-  searchDebounce = setTimeout(() => {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    displayProducts(allProducts.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)));
-  }, 200);
-}
-
-function filterCategory(cat) {
-  currentCategory = cat;
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', cat === '' ? btn.textContent === 'All' : btn.textContent === cat);
-  });
-  loadProducts();
-}
 
 // --- CART ---
 function addToCart(id, name, price, image) {
@@ -190,66 +314,6 @@ document.addEventListener('click', e => {
     document.getElementById('userBtn')?.setAttribute('aria-expanded', 'false');
   }
 });
-
-// ==================== WISHLIST MODAL ====================
-
-
-async function openWishlistModal() {
-  if (!user) {
-    alert('Please login to view your wishlist.');
-    window.location.href = 'index.html';
-    return;
-  }
-  const listEl = document.getElementById('wishlistList');
-  listEl.innerHTML = '<p style="color:#999;">Loading wishlist...</p>';
-  document.getElementById('wishlistModal').classList.add('active');
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/wishlist/user/${user.id}`, {
-      headers: { ...authHeaders() }
-    });
-    wishlistItemsCache = await res.json();
-    renderWishlistModal();
-  } catch {
-    listEl.innerHTML = '<p style="color:#999;">Could not load wishlist.</p>';
-  }
-}
-
-function renderWishlistModal() {
-  const listEl = document.getElementById('wishlistList');
-  listEl.innerHTML = wishlistItemsCache.length === 0
-    ? '<p style="color:#999;">Your wishlist is empty.</p>'
-    : wishlistItemsCache.map(p => `
-      <div class="wishlist-item">
-        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/70'" onclick="window.location.href='product.html?id=${p.id}'"/>
-        <div class="wishlist-item-info" onclick="window.location.href='product.html?id=${p.id}'">
-          <h4>${escapeHtml(p.name)}</h4>
-          <p>Rs ${parseFloat(p.price).toFixed(2)}</p>
-        </div>
-        <div class="wishlist-item-actions">
-          <button class="btn-add-cart-mini" onclick="addToCart(${p.id}, '${escapeForOnclick(p.name)}', ${p.price}, '${escapeForOnclick(p.image_url)}')" ${p.stock === 0 ? 'disabled' : ''}>${p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}</button>
-          <button class="remove-item" onclick="removeFromWishlistModal(${p.id})" aria-label="Remove ${escapeForOnclick(p.name)} from wishlist">&#x2715;</button>
-        </div>
-      </div>`).join('');
-}
-
-async function removeFromWishlistModal(productId) {
-  try {
-    await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
-      method: 'DELETE',
-      headers: { ...authHeaders() }
-    });
-    wishlistItemsCache = wishlistItemsCache.filter(p => p.id !== productId);
-    renderWishlistModal();
-
-    
-    if (typeof currentProduct !== 'undefined' && currentProduct && currentProduct.id === productId) {
-      renderWishlistButton(false);
-    }
-  } catch {
-    alert('Could not remove item. Please try again.');
-  }
-}
 
 // --- CHECKOUT ---
 function openDeliveryModal() {
